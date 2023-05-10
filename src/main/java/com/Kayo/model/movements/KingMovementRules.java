@@ -23,7 +23,7 @@ public class KingMovementRules extends MovementRules{
         int lineDistance = toLine - fromLine;
         int columnDistance = toColumn - fromColumn;
         // se o movimento eh de uma casa para qualquer direcao
-        if(Math.abs(lineDistance) == 1 || Math.abs(columnDistance) == 1){
+        if((Math.abs(lineDistance) == 1 || Math.abs(columnDistance) == 1) && (Math.abs(lineDistance) < 2 && Math.abs(columnDistance) < 2)){
             if(toPiece instanceof NullPiece){
                 // verificando se a casa ja eh dominada pela peca inimiga
                 if(board.hasPositionDominated(fromPiece.getColor(), toLine, toColumn)){
