@@ -1,6 +1,7 @@
 package com.Kayo.model;
 
 import com.Kayo.model.Piece.*;
+import com.Kayo.model.movements.MovementRules;
 import com.Kayo.util.PieceColor;
 
 public class Board {
@@ -78,5 +79,22 @@ public class Board {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public boolean hasPositionDominated(PieceColor allyColor, int toLine, int toColumn){
+        // pegando cada peca inimiga e verificando se ela pode mover para aquela posicao
+        for(int fromLine = 0; fromLine < 8; fromLine++){
+            for(int fromColumn = 0; fromColumn < 8; fromColumn++){
+                Piece fromPiece = getPiece(fromLine, fromColumn);
+                if(fromPiece.getColor() != allyColor){
+                    // verificando se pode fazer o movimento
+                    MovementRules movementRules = fromPiece.getMovementRules();
+                    if(movementRules.isValidMove(this, fromLine, fromColumn, toLine, toColumn)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
