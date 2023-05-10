@@ -160,4 +160,34 @@ class BoardControllerTest {
         Assertions.assertTrue(controller.getTypeOf(5, 5) == PieceType.KNIGHT);
         Assertions.assertTrue(l3);
     }
+
+    @Test
+    void moveKing() {
+        BoardController controller = new BoardController();
+
+        // movimento errado
+        boolean front1 = controller.move(7, 4, 6, 3);
+        Assertions.assertTrue(controller.getTypeOf(7, 4) == PieceType.KING);
+        Assertions.assertTrue(controller.getTypeOf(6, 4) == PieceType.PAWN);
+        Assertions.assertFalse(front1);
+
+        // preparando ambiente
+        controller.move(1, 0, 3, 0);
+        controller.move(0, 0, 2, 0);
+        controller.move(2, 0, 2, 7);
+        controller.move(2, 7, 5, 7);
+        controller.move(6, 3, 4, 3);
+
+        // movimento certo 1 para a diagonal
+        boolean diagonal1 = controller.move(7, 4, 6, 3);
+        Assertions.assertTrue(controller.getTypeOf(7, 4) == PieceType.NULL);
+        Assertions.assertTrue(controller.getTypeOf(6, 3) == PieceType.KING);
+        Assertions.assertTrue(diagonal1);
+
+        // movimento nao possivel para frente porque ja esta dominado pela torre inimiga
+        boolean front2 = controller.move(6, 3, 5, 3);
+        Assertions.assertTrue(controller.getTypeOf(6, 3) == PieceType.KING);
+        Assertions.assertTrue(controller.getTypeOf(5, 3) == PieceType.NULL);
+        Assertions.assertFalse(front2);
+    }
 }
