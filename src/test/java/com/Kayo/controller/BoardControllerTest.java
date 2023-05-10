@@ -106,4 +106,36 @@ class BoardControllerTest {
         Assertions.assertTrue(controller.getTypeOf(1, 6) == PieceType.BISHOP);
         Assertions.assertTrue(diagonal3);
     }
+
+    @Test
+    void moveRook(){
+        BoardController controller = new BoardController();
+
+        // movimento errado
+        boolean front0 = controller.move(7, 0, 7, 0);
+        Assertions.assertTrue(controller.getTypeOf(7, 0) == PieceType.ROOK);
+        Assertions.assertFalse(front0);
+
+        // preparando ambiente
+        controller.move(6, 0, 4, 0);
+
+        // movimento errado
+        boolean front1 = controller.move(7, 0, 3, 0);
+        Assertions.assertTrue(controller.getTypeOf(7, 0) == PieceType.ROOK);
+        Assertions.assertTrue(controller.getTypeOf(3, 0) == PieceType.NULL);
+        Assertions.assertFalse(front1);
+
+        // movimento certo
+        boolean front2 = controller.move(7, 0, 5, 0);
+        Assertions.assertTrue(controller.getTypeOf(7, 0) == PieceType.NULL);
+        Assertions.assertTrue(controller.getTypeOf(5, 0) == PieceType.ROOK);
+        Assertions.assertTrue(front2);
+
+        // movimento certo
+        boolean front3 = controller.move(5, 0, 5, 7);
+        Assertions.assertTrue(controller.getTypeOf(5, 0) == PieceType.NULL);
+        Assertions.assertTrue(controller.getTypeOf(5, 7) == PieceType.ROOK);
+        Assertions.assertTrue(front2);
+
+    }
 }
