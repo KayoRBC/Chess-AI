@@ -89,8 +89,10 @@ public class Board {
                 if(fromPiece.getColor() != allyColor){
                     // verificando se pode fazer o movimento
                     MovementRules movementRules = fromPiece.getMovementRules();
-                    if(movementRules.isValidMove(this, fromLine, fromColumn, toLine, toColumn)){
-                        return true;
+                    if(movementRules != null) {
+                        if (movementRules.isValidMove(this, fromLine, fromColumn, toLine, toColumn)) {
+                            return true;
+                        }
                     }
                 }
             }
