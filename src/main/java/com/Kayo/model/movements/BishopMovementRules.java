@@ -47,7 +47,7 @@ public class BishopMovementRules extends MovementRules{
     }
 
     private int[] createIntermediateValues(int start, int end){
-        int intermediateLength = Math.abs(start - end) - 2;
+        int intermediateLength = Math.abs(start - end) - 1;
         if(intermediateLength > 0){
             int[] numbers = new int[Math.abs(intermediateLength)];
             if(start < end) {
