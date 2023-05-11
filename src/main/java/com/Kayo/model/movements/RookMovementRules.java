@@ -3,6 +3,7 @@ package com.Kayo.model.movements;
 import com.Kayo.model.Board;
 import com.Kayo.model.Piece.NullPiece;
 import com.Kayo.model.Piece.Piece;
+import com.Kayo.util.Util;
 
 public class RookMovementRules extends MovementRules{
     @Override
@@ -23,7 +24,7 @@ public class RookMovementRules extends MovementRules{
         int columnDistance = toColumn - fromColumn;
 
         if(Math.abs(lineDistance) > 0 && columnDistance == 0){
-            int[] intermediateLines = createIntermediateValues(fromLine, toLine);
+            int[] intermediateLines = Util.createIntermediateValues(fromLine, toLine);
             if(intermediateLines == null){
                 return true;
             }
@@ -39,7 +40,7 @@ public class RookMovementRules extends MovementRules{
             }
         }
         else if(Math.abs(columnDistance) > 0 && lineDistance == 0){
-            int[] intermediateColumns = createIntermediateValues(fromColumn, toColumn);
+            int[] intermediateColumns = Util.createIntermediateValues(fromColumn, toColumn);
             if(intermediateColumns == null){
                 return true;
             }
@@ -56,28 +57,5 @@ public class RookMovementRules extends MovementRules{
         }
         // nao foi possivel movimentar
         return false;
-    }
-
-    private int[] createIntermediateValues(int start, int end){
-        int intermediateLength = Math.abs(start - end) - 1;
-        if(intermediateLength > 0){
-            int[] numbers = new int[Math.abs(intermediateLength)];
-            if(start < end) {
-                int num = start + 1;
-                for (int i = 0; i < numbers.length; i++) {
-                    numbers[i] = num;
-                    num++;
-                }
-            }
-            else{
-                int num = start - 1;
-                for (int i = 0; i < numbers.length; i++) {
-                    numbers[i] = num;
-                    num--;
-                }
-            }
-            return numbers;
-        }
-        return null;
     }
 }
