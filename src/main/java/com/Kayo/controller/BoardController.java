@@ -3,6 +3,7 @@ package com.Kayo.controller;
 import com.Kayo.model.Board;
 import com.Kayo.model.Piece.*;
 import com.Kayo.model.movements.MovementRules;
+import com.Kayo.util.PieceColor;
 import com.Kayo.view.PieceType;
 
 public class BoardController {
@@ -53,5 +54,10 @@ public class BoardController {
             }
         }
         return null;
+    }
+
+    public PieceColor getColorOf(int line, int column){
+        Piece piece = board.getPiece(line, column);
+        return piece.getColor();
     }
 }
