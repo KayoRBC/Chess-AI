@@ -27,6 +27,9 @@ public class KnightMovementRules extends MovementRules{
         if(Math.abs(lineDistance) == 2 && Math.abs(columnDistance) == 1){
             return true;
         }
+        else if(Math.abs(lineDistance) == 1 && Math.abs(columnDistance) == 2){
+            return true;
+        }
         return false;
     }
 }
