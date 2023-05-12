@@ -1,32 +1,23 @@
 package com.Kayo.view;
 
-import com.Kayo.controller.ImageController;
-import com.Kayo.util.PieceColor;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 
 public class PieceButton extends JComponent{
-    private int line;
-    private int column;
+    private final int LINE;
+    private final int COLUMN;
 
-    private PieceType type;
-    private PieceColor color;
+    private final int SIZE;
 
-    private int size;
-
-    private BoardPanel boardPanel;
-
-    BufferedImage image;
+    private final BoardPanel BOARD_PANEL;
 
     public PieceButton(int line, int column, int size, BoardPanel boardPanel){
-        this.line = line;
-        this.column = column;
-        this.size = size;
-        this.boardPanel = boardPanel;
+        this.LINE = line;
+        this.COLUMN = column;
+        this.SIZE = size;
+        this.BOARD_PANEL = boardPanel;
 
         setPreferredSize(new Dimension(size, size));
         this.setFocusable(true);
@@ -41,16 +32,16 @@ public class PieceButton extends JComponent{
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                boardPanel.selectPosition(line, column);
+                BOARD_PANEL.selectPosition(LINE, COLUMN);
             }
         });
         add(button);
     }
 
     public void insertButton(){
-        setBounds(column * size, line * size, size, size);
-        boardPanel.add(this);
-        System.out.println("CRIADO bobao"+line+column);
+        setBounds(COLUMN * SIZE, LINE * SIZE, SIZE, SIZE);
+        BOARD_PANEL.add(this);
+        System.out.println("CRIADO bobao"+ LINE + COLUMN);
     }
 
 }
