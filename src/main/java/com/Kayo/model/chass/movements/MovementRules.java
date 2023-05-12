@@ -1,6 +1,6 @@
-package com.Kayo.model.movements;
+package com.Kayo.model.chass.movements;
 
-import com.Kayo.model.Board;
+import com.Kayo.model.chass.Board;
 
 public abstract class MovementRules {
 

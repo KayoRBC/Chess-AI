@@ -1,7 +1,6 @@
-package com.Kayo.model.Piece;
+package com.Kayo.model.chass.Piece;
 
-import com.Kayo.model.movements.BishopMovementRules;
-import com.Kayo.model.movements.MovementRules;
+import com.Kayo.model.chass.movements.BishopMovementRules;
 import com.Kayo.util.PieceColor;
 
 public class Bishop extends Piece{

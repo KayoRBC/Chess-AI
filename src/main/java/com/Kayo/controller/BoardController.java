@@ -1,8 +1,8 @@
 package com.Kayo.controller;
 
-import com.Kayo.model.Board;
-import com.Kayo.model.Piece.*;
-import com.Kayo.model.movements.MovementRules;
+import com.Kayo.model.chass.Board;
+import com.Kayo.model.chass.Piece.*;
+import com.Kayo.model.chass.movements.MovementRules;
 import com.Kayo.util.PieceColor;
 import com.Kayo.view.PieceType;
 

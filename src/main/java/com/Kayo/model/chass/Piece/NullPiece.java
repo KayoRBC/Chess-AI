@@ -1,4 +1,4 @@
-package com.Kayo.model.Piece;
+package com.Kayo.model.chass.Piece;
 
 public class NullPiece extends Piece{
     public NullPiece() {

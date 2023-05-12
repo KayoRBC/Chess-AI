@@ -1,8 +1,8 @@
-package com.Kayo.model.movements;
+package com.Kayo.model.chass.movements;
 
-import com.Kayo.model.Board;
-import com.Kayo.model.Piece.NullPiece;
-import com.Kayo.model.Piece.Piece;
+import com.Kayo.model.chass.Board;
+import com.Kayo.model.chass.Piece.NullPiece;
+import com.Kayo.model.chass.Piece.Piece;
 import com.Kayo.util.Util;
 
 public class BishopMovementRules extends MovementRules{

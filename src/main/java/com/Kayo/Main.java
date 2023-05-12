@@ -1,7 +1,5 @@
 package com.Kayo;
 
-import com.Kayo.model.Board;
-import com.Kayo.model.Piece.Piece;
 import com.Kayo.view.BoardPanel;
 
 import javax.swing.*;

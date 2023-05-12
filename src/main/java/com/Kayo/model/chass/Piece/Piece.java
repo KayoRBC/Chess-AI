@@ -1,7 +1,6 @@
-package com.Kayo.model.Piece;
+package com.Kayo.model.chass.Piece;
 
-import com.Kayo.model.Board;
-import com.Kayo.model.movements.MovementRules;
+import com.Kayo.model.chass.movements.MovementRules;
 import com.Kayo.util.PieceColor;
 
 public abstract class Piece {

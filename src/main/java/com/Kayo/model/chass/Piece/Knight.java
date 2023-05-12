@@ -1,7 +1,6 @@
-package com.Kayo.model.Piece;
+package com.Kayo.model.chass.Piece;
 
-import com.Kayo.model.movements.KnightMovementRules;
-import com.Kayo.model.movements.MovementRules;
+import com.Kayo.model.chass.movements.KnightMovementRules;
 import com.Kayo.util.PieceColor;
 
 public class Knight extends Piece{

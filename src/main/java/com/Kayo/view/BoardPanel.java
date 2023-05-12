@@ -27,8 +27,8 @@ public class BoardPanel extends JPanel implements Runnable{
 
     Thread gameThread;
 
-    ImageController imageController = new ImageController();
-    BoardController boardController = new BoardController();
+    private final ImageController imageController = new ImageController();
+    private final BoardController boardController = new BoardController();
 
     //
     private int fromLine = 0;

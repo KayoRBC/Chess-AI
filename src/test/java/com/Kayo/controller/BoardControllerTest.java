@@ -1,11 +1,8 @@
 package com.Kayo.controller;
 
-import com.Kayo.model.Board;
 import com.Kayo.view.PieceType;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class BoardControllerTest {
 
