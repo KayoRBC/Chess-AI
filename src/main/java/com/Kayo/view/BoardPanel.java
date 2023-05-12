@@ -2,7 +2,9 @@ package com.Kayo.view;
 
 import com.Kayo.controller.BoardController;
 import com.Kayo.controller.ImageController;
+import com.Kayo.model.chass.Piece.Piece;
 import com.Kayo.util.PieceColor;
+import com.Kayo.util.PieceType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,27 +24,27 @@ public class BoardPanel extends JPanel implements Runnable{
     final int screenWidth = imageSize * maxScreenCol; // largura da tela
     final int screenHeight = imageSize * maxScreenRow; // altura da tela
 
-    // define o fps do jogo
-    final int fps  = 60;
-
     Thread gameThread;
 
-    private final ImageController imageController = new ImageController();
-    private final BoardController boardController = new BoardController();
+    private final PieceColor USER_COLOR;
 
-    //
+    // comtroladores
+    private final ImageController imageController = new ImageController();
+    private final BoardController boardController;
+
+    // posicao dos botoes selecionados
     private int fromLine = 0;
     private int fromColumn = 0;
     private int toLine = 0;
     private int toColumn = 0;
     private int select = 0;
 
-    public BoardPanel() {
+    public BoardPanel(PieceColor USER_COLOR) {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
-        //this.setDoubleBuffered(true);
-        //this.addKeyListener(keyHandler);
         this.setFocusable(true);
+        this.USER_COLOR = USER_COLOR;
+        boardController = new BoardController(true, USER_COLOR);
     }
 
     public void startGameThread() {
@@ -115,7 +117,7 @@ public class BoardPanel extends JPanel implements Runnable{
         if(select == 2){
             System.out.println("From line: "+fromLine+" Column: "+fromColumn+" | To line: "+toLine+" Column: "+toColumn);
 
-            if(boardController.move(fromLine, fromColumn, toLine, toColumn)){
+            if(boardController.move(true, fromLine, fromColumn, toLine, toColumn)){
                 System.out.println("Deu boa");
             }
             else{

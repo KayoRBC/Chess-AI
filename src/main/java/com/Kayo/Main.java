@@ -1,5 +1,6 @@
 package com.Kayo;
 
+import com.Kayo.util.PieceColor;
 import com.Kayo.view.BoardPanel;
 
 import javax.swing.*;
@@ -12,7 +13,9 @@ public class Main {
         window.setResizable(false);
         window.setTitle("Chass game");
 
-        BoardPanel boardPanel = new BoardPanel();
+        final PieceColor USER_COLOR = PieceColor.WHITE;
+
+        BoardPanel boardPanel = new BoardPanel(USER_COLOR);
         window.add(boardPanel);
 
         window.pack(); // usar os parametros da classe GamePanel (subclasse de JFrame)

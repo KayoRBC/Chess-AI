@@ -2,7 +2,7 @@ package com.Kayo.controller;
 
 import com.Kayo.util.PieceColor;
 import com.Kayo.view.BoardPanel;
-import com.Kayo.view.PieceType;
+import com.Kayo.util.PieceType;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
