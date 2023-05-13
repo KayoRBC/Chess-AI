@@ -27,6 +27,7 @@ public class King extends Piece{
     }
 
     private boolean isOneStep(int fromLine, int fromColumn, int toLine, int toColumn){
+        // calculando distancias
         int lineDistance = toLine - fromLine;
         int columnDistance = toColumn - fromColumn;
         // valido se o movimento eh de uma casa para qualquer direcao

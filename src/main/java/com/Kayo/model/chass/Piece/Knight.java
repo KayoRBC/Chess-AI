@@ -27,6 +27,7 @@ public class Knight extends Piece{
     }
 
     private boolean isLValid(int fromLine, int fromColumn, int toLine, int toColumn){
+        // calculando distancias
         int lineDistance = toLine - fromLine;
         int columnDistance = toColumn - fromColumn;
         // valido se movimento for em L

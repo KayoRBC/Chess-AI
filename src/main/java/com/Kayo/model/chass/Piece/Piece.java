@@ -10,9 +10,9 @@ public abstract class Piece {
     protected final PieceType TYPE;
     protected boolean hasMoved = false;
 
-    public Piece(PieceColor COLOR, PieceType PIECE_TYPE){
-        this.COLOR = COLOR;
-        this.TYPE = PIECE_TYPE;
+    public Piece(PieceColor color, PieceType pieceType){
+        this.COLOR = color;
+        this.TYPE = pieceType;
     }
 
     public abstract boolean isValidMove(Board board, int fromLine, int fromColumn, int toLine, int toColumn);

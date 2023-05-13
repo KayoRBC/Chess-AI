@@ -1,12 +1,17 @@
 package com.Kayo.controller;
 
+import com.Kayo.model.ai.MovePositions;
 import com.Kayo.model.chass.Board;
 import com.Kayo.model.chass.Piece.*;
-import com.Kayo.model.chass.movements.MovementRules;
 import com.Kayo.util.PieceColor;
 import com.Kayo.util.PieceType;
 
+import java.util.ArrayList;
+
 public class BoardController {
+
+    ArrayList<MovePositions> pastMoves = new ArrayList<>();
+    ArrayList<Boolean> pastUserTurn = new ArrayList<>();
 
     private Board board;
 
@@ -28,23 +33,44 @@ public class BoardController {
         }
     }
 
+    private BoardController(Board board, boolean isUserTurn, PieceColor USER_COLOR){
+        this.board = board;
+        this.isUserTurn = isUserTurn;
+        this.USER_COLOR = USER_COLOR;
+        // seleciona cor da peca oponente de acordo com a peca do usuario
+        if(USER_COLOR == PieceColor.WHITE){
+            OPPONENT_COLOR = PieceColor.BLACK;
+        }
+        else{
+            OPPONENT_COLOR = PieceColor.WHITE;
+        }
+    }
+
     public boolean move(boolean isUser, int fromLine, int fromColumn, int toLine, int toColumn){
         Piece fromPiece = board.getPiece(fromLine, fromColumn);
-        // se existir peca origem e a peca for diferente da peca vazia
-        if(fromPiece != null && !(fromPiece instanceof NullPiece)){
+        Piece toPiece = board.getPiece(toLine, toColumn);
+        // se pecas existirem
+        if(fromPiece != null && toPiece != null){
             // se for turno do respectivo jogador
-            if((isUser && isUserTurn) || (!isUser && !isUserTurn)){
-                MovementRules movementRules = fromPiece.getMovementRules();
-                // se for movimento valido de acordo com a regra da peca
-                if(movementRules.isValidMove(board, fromLine, fromColumn, toLine, toColumn)){
-                    fromPiece.hasMoved();
+            if((isUser && isUserTurn && fromPiece.getColor() == USER_COLOR)
+                    || (!isUser && !isUserTurn && fromPiece.getColor() == OPPONENT_COLOR)){
+
+                // se for movimento valido de acordo com a regra da peca origem
+                if(fromPiece.isValidMove(board, fromLine, fromColumn, toLine, toColumn)){
+                    // mudando estado da peca para movida
+                    fromPiece.setHasMoved(true);
+                    // removendo peca da posicao destino
+                    board.removePiece(toLine, toColumn);
+                    // trocando posicoes de origem e destino
                     board.switchPieces(fromLine, fromColumn, toLine, toColumn);
-                    board.removePiece(fromLine, fromColumn);
+                    // trocando turno
                     changeTurn();
+                    // movimentacao realizada
                     return true;
                 }
             }
         }
+        // movimentacao nao realizada
         return false;
     }
 
@@ -54,34 +80,19 @@ public class BoardController {
 
     public PieceType getTypeOf(int line, int column){
         Piece piece = board.getPiece(line, column);
-        if(piece != null){
-            if(piece instanceof Rook){
-                return PieceType.ROOK;
-            }
-            else if(piece instanceof Knight){
-                return PieceType.KNIGHT;
-            }
-            else if(piece instanceof Bishop){
-                return PieceType.BISHOP;
-            }
-            else if(piece instanceof Queen){
-                return PieceType.QUEEN;
-            }
-            else if(piece instanceof King){
-                return PieceType.KING;
-            }
-            else if(piece instanceof Pawn){
-                return PieceType.PAWN;
-            }
-            else if(piece instanceof  NullPiece){
-                return PieceType.NULL;
-            }
-        }
-        return null;
+        return piece.getType();
     }
 
     public PieceColor getColorOf(int line, int column){
         Piece piece = board.getPiece(line, column);
         return piece.getColor();
+    }
+
+    public BoardController createClone(){
+        return new BoardController(board.createClone(), isUserTurn, USER_COLOR);
+    }
+
+    public boolean isUserTurn() {
+        return isUserTurn;
     }
 }

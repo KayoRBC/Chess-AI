@@ -26,22 +26,29 @@ public class PieceButton extends JComponent{
     }
 
     private void createButton(int size){
+        // criando botao
         JButton button = new JButton();
+        // informando que botao vai ser invisivel
         button.setOpaque(false);
+        // posicionando e redirecionando botao no container
         button.setBounds(0, 0, size, size);
+        // inserindo funcao de execucao quando apertar o botao
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // inserindo posicoes do botao no board panel
                 BOARD_PANEL.selectPosition(LINE, COLUMN);
             }
         });
+        // inserindo o botao no container
         add(button);
     }
 
     public void insertButton(){
+        // posicionando o botao na tela
         setBounds(COLUMN * SIZE, LINE * SIZE, SIZE, SIZE);
+        // inserindo na tela
         BOARD_PANEL.add(this);
-        System.out.println("CRIADO bobao"+ LINE + COLUMN);
     }
 
 }

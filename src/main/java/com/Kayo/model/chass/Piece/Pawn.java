@@ -43,6 +43,7 @@ public class Pawn extends Piece{
         Piece fromPiece = board.getPiece(fromLine, fromColumn);
         Piece toPiece = board.getPiece(toLine, toColumn);
 
+        // calculando distancias
         int lineDistance = toLine - fromLine;
         int columnDistance = toColumn - fromColumn;
         // se for na mesma coluna e peca destino for vazia
@@ -65,11 +66,12 @@ public class Pawn extends Piece{
     }
 
     private boolean isDiagonalValid(Board board, int fromLine, int fromColumn, int toLine, int toColumn){
-        Piece toPiece = board.getPiece(toLine, toColumn);
+        // calculando distancias
         int lineDistance = toLine - fromLine;
         int columnDistance = toColumn - fromColumn;
         // se direcao vertial certa e movimento de uma casa para a diagonal
         if(lineDistance == VERTICAL_DIRECTION && Math.abs(columnDistance) == 1){
+            Piece toPiece = board.getPiece(toLine, toColumn);
             // valido se o destino possui uma peca nao vazia
             return (toPiece.getType() != PieceType.NULL);
         }

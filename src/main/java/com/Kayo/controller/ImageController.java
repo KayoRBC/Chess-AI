@@ -9,9 +9,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class ImageController {
+public abstract class ImageController {
 
-    public BufferedImage[][] loadBackground(){
+    public static BufferedImage[][] loadBackground(){
         BufferedImage[][] board = new BufferedImage[8][8];
         boolean isDark = false;
         for(int i = 0; i < 8; i++){
@@ -35,8 +35,9 @@ public class ImageController {
         return board;
     }
 
-    public BufferedImage loadPiece(PieceType type, PieceColor pieceColor){
-        String color = "";
+    public static BufferedImage loadPiece(PieceType type, PieceColor pieceColor){
+        // convertendo a cor da peca em uma string
+        String color;
         if(pieceColor == PieceColor.BLACK){
             color = "black";
         }
@@ -44,6 +45,7 @@ public class ImageController {
             color = "white";
         }
 
+        // selecionando imagem de acordo com o tipo da peca e a cor
         BufferedImage image = switch (type) {
             case ROOK -> loadPiece(color + "_rook");
             case KNIGHT -> loadPiece(color + "_knight");
@@ -53,18 +55,25 @@ public class ImageController {
             case PAWN -> loadPiece(color + "_pawn");
             default -> null;
         };
+
+        // retornando imagem
         return image;
     }
 
-    private BufferedImage loadPiece(String pieceNamePng){
+    private static BufferedImage loadPiece(String pieceNamePng){
+        // pegando caminho da imagem
         String path;
         path = BoardPanel.class.getClassLoader().getResource("images/pieces/"+pieceNamePng+".png").getPath();
+
+        // carregando imagem
         BufferedImage image = null;
         try {
             image = ImageIO.read(new File(path));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // retornando imagem
         return image;
     }
 }

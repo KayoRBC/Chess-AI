@@ -1,7 +1,6 @@
 package com.Kayo.model.chass.Piece;
 
 import com.Kayo.model.chass.Board;
-import com.Kayo.model.chass.movements.RookMovementRules;
 import com.Kayo.util.PieceColor;
 import com.Kayo.util.PieceType;
 import com.Kayo.util.Util;
@@ -30,6 +29,7 @@ public class Rook extends Piece{
     }
 
     private boolean isVerticalValid(Board board, int fromLine, int fromColumn, int toLine, int toColumn){
+        // calculando distancias
         int lineDistance = toLine - fromLine;
         int columnDistance = toColumn - fromColumn;
         // se linhas diferentes e mesma coluna
@@ -54,6 +54,7 @@ public class Rook extends Piece{
     }
 
     private boolean isHorizontalValid(Board board, int fromLine, int fromColumn, int toLine, int toColumn){
+        // calculando distancias
         int lineDistance = toLine - fromLine;
         int columnDistance = toColumn - fromColumn;
         // se colunas diferentes e mesma linha
