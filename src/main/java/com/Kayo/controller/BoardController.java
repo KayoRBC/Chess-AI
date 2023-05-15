@@ -10,9 +10,6 @@ import java.util.ArrayList;
 
 public class BoardController {
 
-    ArrayList<MovePositions> pastMoves = new ArrayList<>();
-    ArrayList<Boolean> pastUserTurn = new ArrayList<>();
-
     private Board board;
 
     private boolean isUserTurn;
