@@ -58,6 +58,13 @@ public abstract class MinMax {
             // pegando filhos do Node atual
             Node[] childs = current.getChilds();
 
+            // se nao ter filhos retorna a heuristica do Node atual
+            if(childs.length == 0){
+                double value = heuristic(current.getBoardController(), allyColor);
+                current.setValue(value);
+                return value;
+            }
+
             // variavel que vai armazenar o melhor valor
             double bestValue;
             // se MAX

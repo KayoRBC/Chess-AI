@@ -5,6 +5,10 @@ import com.Kayo.util.PieceColor;
 import com.Kayo.util.PieceType;
 
 public class King extends Piece{
+
+    // se o rei ja tomou xeque mata alguma vez
+    boolean checkMated = false;
+
     public King(PieceColor color) {
         super(color, PieceType.KING);
     }
@@ -34,5 +38,13 @@ public class King extends Piece{
         return ((Math.abs(lineDistance) == 1 || Math.abs(columnDistance) == 1)
                 && (Math.abs(lineDistance) < 2 && Math.abs(columnDistance) < 2));
 
+    }
+
+    public boolean isCheckMated() {
+        return checkMated;
+    }
+
+    public void setCheckMated(boolean checkMated) {
+        this.checkMated = checkMated;
     }
 }

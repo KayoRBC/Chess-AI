@@ -142,7 +142,6 @@ public class Board {
         return false;
     }
 
-
     public Board createClone(){
         Piece[][] piecesClone = new Piece[8][8];
         // percorrendo posicoes do tabuleiro
@@ -162,6 +161,10 @@ public class Board {
                 }
                 // atualizando estado do clone
                 piecesClone[i][j].setHasMoved(original.hasMoved());
+                // atualizando estado do rei se a peca de copia for o rei
+                if(piecesClone[i][j] instanceof King && original instanceof King){
+                    ((King) piecesClone[i][j]).setCheckMated(((King) original).isCheckMated());
+                }
             }
         }
         // retornando tabuleiro clone

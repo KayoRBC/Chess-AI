@@ -58,6 +58,6 @@ public class AIController {
 
         // Calcula a quantidade de memória liberada e mostrando no terminal
         long memoryFreed = memoryAfter - memoryBefore;
-        System.out.println(memoryFreed);
+        //System.out.println(memoryFreed);
     }
 }

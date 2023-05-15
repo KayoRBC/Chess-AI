@@ -65,6 +65,12 @@ public class BoardController {
                     board.switchPieces(fromLine, fromColumn, toLine, toColumn);
                     // trocando turno
                     changeTurn();
+
+                    // verificando xeque mate no rei do usuario
+                    checkMate(USER_COLOR);
+                    // verificando xeque mate no rei do oponente
+                    checkMate(OPPONENT_COLOR);
+
                     // movimentacao realizada
                     return true;
                 }
@@ -77,6 +83,29 @@ public class BoardController {
     private void changeTurn(){
         this.isUserTurn = !isUserTurn;
     }
+
+    // verificar xeque mate no rei aliado
+    public boolean checkMate(PieceColor allyColor){
+        // pecorrendo possicoes do tabuleiro
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                Piece piece = board.getPiece(i, j);
+                // se for o rei da cor procurada
+                if(piece instanceof King && piece.getColor() == allyColor){
+                    // se a posicao for perigosa em que o rei esta
+                    if(board.isDungerousPosition(allyColor, i, j)){
+                        // atualizando estado do rei
+                        ((King) piece).setCheckMated(true);
+                        // tem xeque mate
+                        return true;
+                    }
+                }
+            }
+        }
+        // nao tem xeque mate
+        return false;
+    }
+
 
     public PieceType getTypeOf(int line, int column){
         Piece piece = board.getPiece(line, column);

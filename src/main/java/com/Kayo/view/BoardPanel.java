@@ -75,9 +75,18 @@ public class BoardPanel extends JPanel implements Runnable{
             if (!BOARD_CONTROLLER.isUserTurn()) {
                 // tentanto movimento com AI
                 if (AI_CONTROLLER.play()) {
-                    System.out.println("AI deu boa");
+                    System.out.println("AI conseguiu mover");
                 } else {
-                    System.out.println("AI deu errado");
+                    System.out.println("AI nao conseguiu mover");
+                }
+
+                // verificando se foi xeque mate
+                if(BOARD_CONTROLLER.checkMate(USER_COLOR)){
+                    System.out.println("Rei do usuario tomou xeque mate");
+                }
+                // verificando xeque mate no rei do oponente
+                if (BOARD_CONTROLLER.checkMate(OPPONENT_COLOR)){
+                    System.out.println("Rei do oponente tomou xeque mate");
                 }
             }
         }
@@ -154,16 +163,25 @@ public class BoardPanel extends JPanel implements Runnable{
 
         // se botoes selecionados for 2
         if(select == 2){
+            System.out.println("Usuario tentanto mover:");
             System.out.println("From line: "+ fromLineButton +" Column: "+ fromColumnButton +" | To line: "+ toLineButton +" Column: "+ toColumnButton);
 
             // tentanto movimento do usuario
             if(BOARD_CONTROLLER.move(true, fromLineButton, fromColumnButton, toLineButton, toColumnButton)){
-                System.out.println("Usuaruio deu boa");
+                System.out.println("Usuaruio conseguiu mover");
             }
             else{
-                System.out.println("usuario deu errado");
+                System.out.println("Usuario nao conseguiu mover");
             }
             select = 0;
+            // verificando se foi xeque mate
+            if(BOARD_CONTROLLER.checkMate(USER_COLOR)){
+                System.out.println("Rei do usuario tomou xeque mate");
+            }
+            // verificando xeque mate no rei do oponente
+            if (BOARD_CONTROLLER.checkMate(OPPONENT_COLOR)){
+                System.out.println("Rei do oponente tomou xeque mate");
+            }
         }
     }
 }
