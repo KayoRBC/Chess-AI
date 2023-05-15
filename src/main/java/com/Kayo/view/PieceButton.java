@@ -30,6 +30,8 @@ public class PieceButton extends JComponent{
         JButton button = new JButton();
         // informando que botao vai ser invisivel
         button.setOpaque(false);
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
         // posicionando e redirecionando botao no container
         button.setBounds(0, 0, size, size);
         // inserindo funcao de execucao quando apertar o botao
@@ -38,6 +40,9 @@ public class PieceButton extends JComponent{
             public void actionPerformed(ActionEvent e) {
                 // inserindo posicoes do botao no board panel
                 BOARD_PANEL.selectPosition(LINE, COLUMN);
+                // mudando cor do botao selecionado
+                button.setBackground(new Color(255, 0, 0, 166));
+                button.setContentAreaFilled(true);
             }
         });
         // inserindo o botao no container

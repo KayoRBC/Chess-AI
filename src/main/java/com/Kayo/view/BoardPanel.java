@@ -102,7 +102,7 @@ public class BoardPanel extends JPanel implements Runnable{
         // desenhando pecas
         drawPieces(g2);
 
-        g2.dispose();
+        //g2.dispose();
     }
 
     private void drawBackGround(Graphics2D g2){
@@ -182,6 +182,9 @@ public class BoardPanel extends JPanel implements Runnable{
             if (BOARD_CONTROLLER.checkMate(OPPONENT_COLOR)){
                 System.out.println("Rei do oponente tomou xeque mate");
             }
+
+            removeAll();
+            insertPiecesButtons();
         }
     }
 }
