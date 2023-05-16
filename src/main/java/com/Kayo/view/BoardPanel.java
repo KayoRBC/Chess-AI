@@ -68,7 +68,7 @@ public class BoardPanel extends JPanel implements Runnable{
             e.printStackTrace();
         }
 
-        insertPiecesButtons();
+        addPiecesButtons();
         // enquanto ninguem vencer
         while(!BOARD_CONTROLLER.verifyWin()) {
             repaint();
@@ -147,13 +147,15 @@ public class BoardPanel extends JPanel implements Runnable{
         }
     }
 
-    private void insertPiecesButtons(){
+    private void addPiecesButtons(){
         // percorrendo posicoes do tabuleiro
         for(int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                // inserindo um botao invisivel em cada posicao do tabuleiro
-                PieceButton button = new PieceButton(i, j, IMAGE_SIZE, this);
-                button.insertButton();
+                // criando botao da peca
+                JButton button = new PieceButton(i, j, this);
+                // inserindo botao na tela
+                button.setBounds(j * IMAGE_SIZE, i * IMAGE_SIZE, IMAGE_SIZE, IMAGE_SIZE);
+                add(button);
             }
         }
     }
@@ -197,7 +199,7 @@ public class BoardPanel extends JPanel implements Runnable{
             }
 
             removeAll();
-            insertPiecesButtons();
+            addPiecesButtons();
         }
     }
 }
