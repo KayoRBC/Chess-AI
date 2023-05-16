@@ -20,11 +20,16 @@ public class Pawn extends Piece{
                 // verificando se eh possivel fazer movimento para frente ate duas casas
                 if(isVerticalValid(board, fromLine, fromColumn, toLine, toColumn, 2)) {
                     // se for duas casas para frente
-                    if(Math.abs(fromLine - toLine) == 2){
-
+                    if(toPiece.getType() == PieceType.NULL){
+                        Piece fromPiece = board.getPiece(fromLine, fromColumn);
+                        // se for duas casas para frente e a peca ja foi movimentada
+                        if(Math.abs(fromLine - toLine) == 2 && fromPiece.hasMoved()){
+                            // invalido
+                            return false;
+                        }
+                        // valido
+                        return true;
                     }
-                    // valido se peca destino eh vazia
-                    return (toPiece.getType() == PieceType.NULL);
                 }
                 // verificando diagonal
                 else if (isDiagonalValid(board, fromLine, fromColumn, toLine, toColumn, 1)){
