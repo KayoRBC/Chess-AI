@@ -6,7 +6,7 @@ import com.Kayo.util.PieceType;
 
 public class King extends Piece{
 
-    // se o rei ja tomou xeque mata alguma vez
+    // se o rei esta em xeque
     boolean checkMated = false;
 
     public King(PieceColor color) {

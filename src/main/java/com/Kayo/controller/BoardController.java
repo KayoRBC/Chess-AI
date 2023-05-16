@@ -62,12 +62,16 @@ public class BoardController {
 
                     // se for movimento valido de acordo com a regra da peca origem
                     if (fromPiece.isValidMove(board, fromLine, fromColumn, toLine, toColumn)) {
-                        // mudando estado da peca para movida
-                        fromPiece.setHasMoved(true);
-                        // removendo peca da posicao destino
-                        board.removePiece(toLine, toColumn);
-                        // trocando posicoes de origem e destino
-                        board.switchPieces(fromLine, fromColumn, toLine, toColumn);
+
+                        // se nao foi possivel aplicar o Roque
+                        if(!applyCastling(fromLine, fromColumn, toLine, toColumn)) {
+                            // mudando estado da peca para movida
+                            fromPiece.setHasMoved(true);
+                            // removendo peca da posicao destino
+                            board.removePiece(toLine, toColumn);
+                            // trocando posicoes de origem e destino
+                            board.switchPieces(fromLine, fromColumn, toLine, toColumn);
+                        }
                         // trocando turno
                         changeTurn();
 
@@ -86,6 +90,38 @@ public class BoardController {
             }
         }
         // movimentacao nao realizada
+        return false;
+    }
+
+    private boolean applyCastling(int fromLine, int fromColumn, int toLine, int toColumn){
+        Piece fromPiece = board.getPiece(fromLine, fromColumn);
+        Piece toPiece = board.getPiece(toLine, toColumn);
+        if(fromPiece instanceof Rook rook){
+            // se for possivel fazer o Roque
+            if(rook.isCastlingMove(board, fromLine, fromColumn, toLine, toColumn)){
+                // se para esquerda
+                if(fromColumn < toColumn){
+                    // movendo rei
+                    board.switchPieces(toLine, toColumn, toLine, toColumn-2);
+                    // movendo torre
+                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn+3);
+                }
+                // para direita
+                else{
+                    // movendo rei
+                    board.switchPieces(toLine, toColumn, toLine, toColumn+2);
+                    // movendo torre
+                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn-2);
+                }
+                // atualizando estados
+                fromPiece.setHasMoved(true);
+                toPiece.setHasMoved(true);
+
+                // movimento realizado
+                return true;
+            }
+        }
+        // movimento nao realizado
         return false;
     }
 
@@ -132,6 +168,8 @@ public class BoardController {
                 Piece piece = board.getPiece(i, j);
                 // se for o rei da cor procurada
                 if(piece instanceof King && piece.getColor() == allyColor){
+                    // resetando estado de xeque mate
+                    ((King) piece).setCheckMated(false);
                     // se a posicao for perigosa em que o rei esta
                     if(board.isDungerousPosition(allyColor, i, j)){
                         // atualizando estado do rei
