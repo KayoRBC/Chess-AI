@@ -70,10 +70,10 @@ public class BoardPanel extends JPanel implements Runnable{
 
         addPiecesButtons();
         // enquanto ninguem vencer
-        while(!BOARD_CONTROLLER.verifyWin()) {
+        while(!BOARD_CONTROLLER.isUserWon() && !BOARD_CONTROLLER.isOpponentWon()) {
             repaint();
-            // se nao for o turno do oponente ou ainda ninguem venceu
-            if (!BOARD_CONTROLLER.isUserTurn() && !BOARD_CONTROLLER.verifyWin()) {
+            // se nao for o turno do oponente e ainda ninguem venceu
+            if (!BOARD_CONTROLLER.isUserTurn() && !BOARD_CONTROLLER.isUserWon() && !BOARD_CONTROLLER.isOpponentWon()) {
                 // tentanto movimento com AI
                 if (AI_CONTROLLER.play()) {
                     System.out.println("AI conseguiu mover");

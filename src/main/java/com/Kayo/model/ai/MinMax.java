@@ -65,34 +65,38 @@ public abstract class MinMax {
                 return value;
             }
 
-            // variavel que vai armazenar o melhor valor
-            double bestValue;
             // se MAX
             if(isMax) {
+                // iniciando melhor valor como infinito negativo
+                current.setValue(Double.NEGATIVE_INFINITY);
+
                 // procurando maior valor entre os filhos
-                bestValue = Double.NEGATIVE_INFINITY;
                 for (Node child : childs) {
                     double value = minMax(child, depth - 1, false, allyColor);
-                    if(value > bestValue){
-                        bestValue = value;
+                    // se o valor do filho for maior que o melhor encontrado
+                    if(value > current.getValue()){
+                        // atualizando valor de melhor encontrado
+                        current.setValue(value);
                     }
                 }
             }
             // se MIN
             else{
+                // inicinando lehor valor como infinito positivo
+                current.setValue(Double.POSITIVE_INFINITY);
+
                 // procurando menor valor entre os filhos
-                bestValue = Double.POSITIVE_INFINITY;
                 for(Node child: childs){
                     double value = minMax(child, depth - 1, true, allyColor);
-                    if(value < bestValue){
-                        bestValue = value;
+                    // se o valor do filho for menor que o melhor encontrado
+                    if(value < current.getValue()){
+                        // atualizando valor de melhor encontrado
+                        current.setValue(value);
                     }
                 }
             }
-            // inserindo melhor valor de heuristica entre os filhos no atual
-            current.setValue(bestValue);
             // retornando melhor valor encontrado
-            return bestValue;
+            return current.getValue();
         }
     }
 

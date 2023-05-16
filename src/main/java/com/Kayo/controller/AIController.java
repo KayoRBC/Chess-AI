@@ -18,9 +18,9 @@ public class AIController {
         // variavel que representa se a AI conseguiu mover a peca
         boolean moved = false;
         // se for o turno da IA
-        if(!BOARD_CONTROLLER.isUserTurn()) {
+        if(!BOARD_CONTROLLER.isUserTurn() && !BOARD_CONTROLLER.isUserWon() && !BOARD_CONTROLLER.isOpponentWon()) {
             // calculando o melhor movimento com MinMax
-            MovePositions bestMove = MinMax.search(BOARD_CONTROLLER, 4, true, AI_COLOR);
+            MovePositions bestMove = MinMax.search(BOARD_CONTROLLER, 1, true, AI_COLOR);
 
             // posicoes do melhor movimento
             int fromLine = bestMove.getFromLine();

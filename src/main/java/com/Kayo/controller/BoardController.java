@@ -93,19 +93,6 @@ public class BoardController {
         this.isUserTurn = !isUserTurn;
     }
 
-    // verificando as variaveis de vitoria para ver se alguem ja venceu
-    public boolean verifyWin(){
-        // se alguem venceu
-        if(isUserWon || isOpponentWon){
-            // alguem venceu
-            return true;
-        }
-        else{
-            // ninguem venceu
-            return false;
-        }
-    }
-
     // verifica se algum rei morreu e se algum morrer atualiza quem ganhou
     private void verifyKings(){
         // se o rei do usuario morreu
