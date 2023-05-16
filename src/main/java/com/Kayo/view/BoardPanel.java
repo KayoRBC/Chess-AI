@@ -81,13 +81,13 @@ public class BoardPanel extends JPanel implements Runnable{
                     System.out.println("AI nao conseguiu mover");
                 }
 
-                // verificando se foi xeque mate
-                if(BOARD_CONTROLLER.checkMate(USER_COLOR)){
-                    System.out.println("Rei do usuario tomou xeque mate");
+                // verificando se foi xeque no rei do usuario
+                if(BOARD_CONTROLLER.check(USER_COLOR)){
+                    System.out.println("Rei do usuario tomou xeque");
                 }
-                // verificando xeque mate no rei do oponente
-                if (BOARD_CONTROLLER.checkMate(OPPONENT_COLOR)){
-                    System.out.println("Rei do oponente tomou xeque mate");
+                // verificando xeque no rei do oponente
+                if (BOARD_CONTROLLER.check(OPPONENT_COLOR)){
+                    System.out.println("Rei do oponente tomou xeque");
                 }
             }
         }
@@ -190,11 +190,11 @@ public class BoardPanel extends JPanel implements Runnable{
             }
             select = 0;
             // verificando se foi xeque mate
-            if(BOARD_CONTROLLER.checkMate(USER_COLOR)){
+            if(BOARD_CONTROLLER.check(USER_COLOR)){
                 System.out.println("Rei do usuario tomou xeque mate");
             }
             // verificando xeque mate no rei do oponente
-            if (BOARD_CONTROLLER.checkMate(OPPONENT_COLOR)){
+            if (BOARD_CONTROLLER.check(OPPONENT_COLOR)){
                 System.out.println("Rei do oponente tomou xeque mate");
             }
 

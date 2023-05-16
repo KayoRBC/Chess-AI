@@ -1,12 +1,9 @@
 package com.Kayo.controller;
 
-import com.Kayo.model.ai.MovePositions;
 import com.Kayo.model.chass.Board;
 import com.Kayo.model.chass.Piece.*;
 import com.Kayo.util.PieceColor;
 import com.Kayo.util.PieceType;
-
-import java.util.ArrayList;
 
 public class BoardController {
 
@@ -72,16 +69,12 @@ public class BoardController {
                             // trocando posicoes de origem e destino
                             board.switchPieces(fromLine, fromColumn, toLine, toColumn);
                         }
-                        // trocando turno
-                        changeTurn();
-
-                        // verificando xeque mate no rei do usuario
-                        checkMate(USER_COLOR);
-                        // verificando xeque mate no rei do oponente
-                        checkMate(OPPONENT_COLOR);
 
                         // verificando vitoria
-                        verifyKings();
+                        winCondition();
+
+                        // trocando turno
+                        changeTurn();
 
                         // movimentacao realizada
                         return true;
@@ -94,31 +87,35 @@ public class BoardController {
     }
 
     private boolean applyCastling(int fromLine, int fromColumn, int toLine, int toColumn){
+        // pegando pecas
         Piece fromPiece = board.getPiece(fromLine, fromColumn);
         Piece toPiece = board.getPiece(toLine, toColumn);
-        if(fromPiece instanceof Rook rook){
-            // se for possivel fazer o Roque
-            if(rook.isCastlingMove(board, fromLine, fromColumn, toLine, toColumn)){
-                // se para esquerda
-                if(fromColumn < toColumn){
-                    // movendo rei
-                    board.switchPieces(toLine, toColumn, toLine, toColumn-2);
-                    // movendo torre
-                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn+3);
-                }
-                // para direita
-                else{
-                    // movendo rei
-                    board.switchPieces(toLine, toColumn, toLine, toColumn+2);
-                    // movendo torre
-                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn-2);
-                }
-                // atualizando estados
-                fromPiece.setHasMoved(true);
-                toPiece.setHasMoved(true);
+        // se as pecas existirem
+        if(fromPiece != null && toPiece != null) {
+            if (fromPiece instanceof Rook rook) {
+                // se for possivel fazer o Roque
+                if (rook.isCastlingMove(board, fromLine, fromColumn, toLine, toColumn)) {
+                    // se para esquerda
+                    if (fromColumn < toColumn) {
+                        // movendo rei
+                        board.switchPieces(toLine, toColumn, toLine, toColumn - 2);
+                        // movendo torre
+                        board.switchPieces(fromLine, fromColumn, fromLine, fromColumn + 3);
+                    }
+                    // para direita
+                    else {
+                        // movendo rei
+                        board.switchPieces(toLine, toColumn, toLine, toColumn + 2);
+                        // movendo torre
+                        board.switchPieces(fromLine, fromColumn, fromLine, fromColumn - 2);
+                    }
+                    // atualizando estados
+                    fromPiece.setHasMoved(true);
+                    toPiece.setHasMoved(true);
 
-                // movimento realizado
-                return true;
+                    // movimento realizado
+                    return true;
+                }
             }
         }
         // movimento nao realizado
@@ -130,7 +127,7 @@ public class BoardController {
     }
 
     // verifica se algum rei morreu e se algum morrer atualiza quem ganhou
-    private void verifyKings(){
+    private void winCondition(){
         // se o rei do usuario morreu
         if(isKingDies(USER_COLOR)){
             // oponente venceu
@@ -160,27 +157,23 @@ public class BoardController {
         return true;
     }
 
-    // verificar xeque mate no rei aliado
-    public boolean checkMate(PieceColor allyColor){
+    // verificar xeque no rei aliado
+    public boolean check(PieceColor allyColor){
         // pecorrendo possicoes do tabuleiro
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
                 Piece piece = board.getPiece(i, j);
                 // se for o rei da cor procurada
                 if(piece instanceof King && piece.getColor() == allyColor){
-                    // resetando estado de xeque mate
-                    ((King) piece).setCheckMated(false);
                     // se a posicao for perigosa em que o rei esta
                     if(board.isDungerousPosition(allyColor, i, j)){
-                        // atualizando estado do rei
-                        ((King) piece).setCheckMated(true);
-                        // tem xeque mate
+                        // xeque mate
                         return true;
                     }
                 }
             }
         }
-        // nao tem xeque mate
+        // nao xeque mate
         return false;
     }
 
