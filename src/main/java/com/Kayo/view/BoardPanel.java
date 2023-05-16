@@ -69,10 +69,11 @@ public class BoardPanel extends JPanel implements Runnable{
         }
 
         insertPiecesButtons();
-        while(GAME_THREAD != null) {
+        // enquanto ninguem vencer
+        while(!BOARD_CONTROLLER.verifyWin()) {
             repaint();
-            // se nao for o turno do oponente
-            if (!BOARD_CONTROLLER.isUserTurn()) {
+            // se nao for o turno do oponente ou ainda ninguem venceu
+            if (!BOARD_CONTROLLER.isUserTurn() && !BOARD_CONTROLLER.verifyWin()) {
                 // tentanto movimento com AI
                 if (AI_CONTROLLER.play()) {
                     System.out.println("AI conseguiu mover");
@@ -89,6 +90,18 @@ public class BoardPanel extends JPanel implements Runnable{
                     System.out.println("Rei do oponente tomou xeque mate");
                 }
             }
+        }
+        // se o oponente venceu
+        if(BOARD_CONTROLLER.isOpponentWon()){
+            System.out.println("Oponente venceu");
+        }
+        // se o usuario venceu
+        else if(BOARD_CONTROLLER.isUserWon()){
+            System.out.println("Jogador venceu");
+        }
+        // algum erro na vitoria
+        else{
+            System.out.println("Ocorreu um erro na vitoria");
         }
     }
 
