@@ -35,33 +35,27 @@ public abstract class MinMax {
                     // percorrendo posicoes para toPiece
                     for(int toLine = 0; toLine < 8; toLine++){
                         for(int toColumn = 0; toColumn < 8; toColumn++){
+
                             // se conseguir fazer movimento de fromPiece para toPiece
                             if(board.move(board.isUserTurn(), fromLine, fromColumn, toLine, toColumn)){
+                                // criando filho
                                 PositionsNode child = new PositionsNode(fromLine, fromColumn, toLine, toColumn);
-                                // se for MAX
-                                if(isMax) {
-                                    // procurando melhor valor no filho
-                                    PositionsNode best = minMax(child, board, depth+1, maxDepth, false, allyColor);
-                                    double bestValue = best.getValue();
-                                    // se o melhor valor encontrado do filho for maior do que o valor registrado no pai
-                                    if(bestValue > current.getValue()){
-                                        current.setValue(bestValue);
-                                        if(depth == 0){
-                                            transferPositions(best, current);
-                                        }
-                                    }
-                                }
-                                // se for MIN
-                                else{
-                                    // procurando melhor valor no filho
-                                    PositionsNode best = minMax(child, board, depth+1, maxDepth, true, allyColor);
-                                    double bestValue = best.getValue();
-                                    // se o melhor valor encontrado do filho for menor do que o valor registrado no pai
-                                    if(bestValue < current.getValue()){
-                                        current.setValue(bestValue);
-                                        if(depth == 0){
-                                            transferPositions(best, current);
-                                        }
+
+                                // procurando melhor valor no filho
+                                PositionsNode best = minMax(child, board, depth + 1, maxDepth, !isMax, allyColor);
+                                double bestValue = best.getValue();
+
+                                // se for max e o melhor valor foi maior do que o registrado
+                                if ((isMax && bestValue > current.getValue())
+                                        // ou se for min e melhor valor for melhor do que o registrado
+                                        || (!isMax && bestValue < current.getValue())
+                                        // ou se o melhor valor for igual ao valor atual, tem 10% de chance de trocar
+                                        || (bestValue == current.getValue() && Math.random() < 0.1)) {
+                                    // registrando melhor valor no Node atual
+                                    current.setValue(bestValue);
+                                    // retropopagando posicoes de movimentacao se profundidade atual for 0
+                                    if (depth == 0) {
+                                        transferPositions(best, current);
                                     }
                                 }
                                 // retornando backup
@@ -76,35 +70,6 @@ public abstract class MinMax {
         return current;
     }
 
-    private static void searchBest(PositionsNode current, BoardController board, int depth, int maxDepth, boolean isMax, PieceColor allyColor) {
-        // se for MAX
-        if(isMax) {
-            // procurando melhor valor no filho do filho
-            PositionsNode best = minMax(current, board, depth+1, maxDepth, false, allyColor);
-            double bestValue = best.getValue();
-            // se o melhor valor encontrado do filho for maior do que o valor registrado no pai
-            if(bestValue > current.getValue()){
-                current.setValue(bestValue);
-                if(depth == 0){
-                    transferPositions(best, current);
-                }
-            }
-        }
-        // se for MIN
-        else{
-            // procurando melhor valor no filho
-            PositionsNode best = minMax(current, board, depth+1, maxDepth, true, allyColor);
-            double bestValue = best.getValue();
-            // se o melhor valor encontrado do filho for menor do que o valor registrado no pai
-            if(bestValue < current.getValue()){
-                current.setValue(bestValue);
-                if(depth == 0){
-                    transferPositions(best, current);
-                }
-            }
-        }
-    }
-
     private static void transferPositions(PositionsNode from, PositionsNode to){
         to.setFromLine(from.getFromLine());
         to.setFromColumn(from.getFromColumn());
@@ -112,39 +77,39 @@ public abstract class MinMax {
         to.setToColumn(from.getToColumn());
     }
 
-    private static double heuristic(BoardController state, PieceColor allyColor){
-        // pesos de cada peca
-        final int PAWN_WEIGHT = 1;
-        final int KNIGHT_WEIGHT = 3;
-        final int BISHOP_WEIGHT = 3;
-        final int ROOK_WEIGHT = 5;
-        final int QUEEN_WEIGHT = 9;
-        final double KING_WEIGHT = 1000;
+    private static double getWeight(PieceType type){
+        return switch (type) {
+            case PAWN -> 1;
+            case KNIGHT, BISHOP -> 3;
+            case ROOK -> 5;
+            case QUEEN -> 9;
+            case KING -> 1000;
+            default -> 0;
+        };
+    }
 
+    private static double heuristic(BoardController state, PieceColor allyColor){
+        return calculateWeights(state, allyColor);
+    }
+
+    private static double calculateWeights(BoardController state, PieceColor allyColor) {
         // variavel que vai armazenar o resultado
         double sum = 0;
-
         // percorrendo posicoes do tabuleiro
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
                 // pegando cor e tipo da peca em certa posicao
                 PieceType type = state.getTypeOf(i, j);
                 PieceColor color = state.getColorOf(i, j);
-
-                // verificando se vai somar ou subtrair da heuristica
-                int contributionSignal;
-                if(color == allyColor) contributionSignal = 1;
-                else contributionSignal = -1;
-
-                // inserindo valor na heuristica
-                switch (type) {
-                    case PAWN -> sum += PAWN_WEIGHT * contributionSignal;
-                    case KNIGHT -> sum += KNIGHT_WEIGHT * contributionSignal;
-                    case BISHOP -> sum += BISHOP_WEIGHT * contributionSignal;
-                    case ROOK -> sum += ROOK_WEIGHT * contributionSignal;
-                    case QUEEN -> sum += QUEEN_WEIGHT * contributionSignal;
-                    case KING -> sum += KING_WEIGHT * contributionSignal;
-                    default -> sum += 0;
+                // se peca inimiga
+                if(color != allyColor){
+                    // subtrai
+                    sum -= getWeight(type);
+                }
+                // peca aliada
+                else{
+                    // soma
+                    sum += getWeight(type);
                 }
             }
         }
