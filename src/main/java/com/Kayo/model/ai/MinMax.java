@@ -3,101 +3,113 @@ package com.Kayo.model.ai;
 import com.Kayo.controller.BoardController;
 import com.Kayo.util.PieceColor;
 import com.Kayo.util.PieceType;
-
-import java.util.Random;
+import org.w3c.dom.Node;
 
 public abstract class MinMax {
 
-    public static MovePositions search(BoardController boardController, int depth, boolean isMax, PieceColor allyColor){
-        // criando clone do boardController
-        BoardController clone = boardController.createClone();
-
-        // criando Node inicial para busca
-        Node move = new Node(-1, -1, -1, -1, clone);
-
-        // encontrando melhor valor com minMax
-        double bestValue = minMax(move, depth, isMax, allyColor);
-
-        // criando variavel que vai armazenar a melhor movimentacao
-        MovePositions movePositions = null;
-
-        // pegando filhos no Node inicial
-        Node[] childs = move.getChilds();
-
-        Random random = new Random();
-        // percorrendo filhos no No inicial
-        for(Node child : childs){
-            // se filho tem o melhor valor encontrado pelo MaxMin
-            if(child.getValue() == bestValue){
-                // se nenhum movimento foi registrado
-                if(movePositions == null){
-                    movePositions = new MovePositions(child.getFromLine(), child.getFromColumn(), child.getToLine(), child.getToColumn());
-                }
-                // se um movimento ja foi registrado anteriormente sortear se vai substituir
-                else if (random.nextBoolean()){
-                    movePositions = new MovePositions(child.getFromLine(), child.getFromColumn(), child.getToLine(), child.getToColumn());
-                }
-            }
-        }
-        // retornando melhor movimentacao
-        return movePositions;
+    public static PositionsNode search(BoardController boardController, int maxDepth, boolean isMax, PieceColor allyColor){
+        PositionsNode root = new PositionsNode(-1, -1, -1, -1);
+        return minMax(root, boardController, 0, maxDepth, isMax, allyColor);
     }
 
-    private static double minMax(Node current, int depth, boolean isMax, PieceColor allyColor){
+    private static PositionsNode minMax(PositionsNode current, BoardController board, int depth, int maxDepth, boolean isMax, PieceColor allyColor){
         // se chegar na profundidade maxima
-        if(depth == 0){
-            double value = heuristic(current.getBoardController(), allyColor);
+        if(depth >= maxDepth){
+            double value = heuristic(board, allyColor);
             current.setValue(value);
-            return value;
         }
         // se ainda nao chegou na profundidade maxima
         else{
-            // criando e inserindo filhos no Node atual
-            current.generateChilds();
-
-            // pegando filhos do Node atual
-            Node[] childs = current.getChilds();
-
-            // se nao ter filhos retorna a heuristica do Node atual
-            if(childs.length == 0){
-                double value = heuristic(current.getBoardController(), allyColor);
-                current.setValue(value);
-                return value;
-            }
-
+            // setando valor inicial para o Node atual
             // se MAX
-            if(isMax) {
-                // iniciando melhor valor como infinito negativo
+            if(isMax){
                 current.setValue(Double.NEGATIVE_INFINITY);
-
-                // procurando maior valor entre os filhos
-                for (Node child : childs) {
-                    double value = minMax(child, depth - 1, false, allyColor);
-                    // se o valor do filho for maior que o melhor encontrado
-                    if(value > current.getValue()){
-                        // atualizando valor de melhor encontrado
-                        current.setValue(value);
-                    }
-                }
             }
             // se MIN
             else{
-                // inicinando lehor valor como infinito positivo
                 current.setValue(Double.POSITIVE_INFINITY);
-
-                // procurando menor valor entre os filhos
-                for(Node child: childs){
-                    double value = minMax(child, depth - 1, true, allyColor);
-                    // se o valor do filho for menor que o melhor encontrado
-                    if(value < current.getValue()){
-                        // atualizando valor de melhor encontrado
-                        current.setValue(value);
+            }
+            // percorrendo posicoes para fromPiece
+            for(int fromLine = 0; fromLine < 8; fromLine++){
+                for(int fromColumn = 0; fromColumn < 8; fromColumn++){
+                    // percorrendo posicoes para toPiece
+                    for(int toLine = 0; toLine < 8; toLine++){
+                        for(int toColumn = 0; toColumn < 8; toColumn++){
+                            // se conseguir fazer movimento de fromPiece para toPiece
+                            if(board.move(board.isUserTurn(), fromLine, fromColumn, toLine, toColumn)){
+                                PositionsNode child = new PositionsNode(fromLine, fromColumn, toLine, toColumn);
+                                // se for MAX
+                                if(isMax) {
+                                    // procurando melhor valor no filho
+                                    PositionsNode best = minMax(child, board, depth+1, maxDepth, false, allyColor);
+                                    double bestValue = best.getValue();
+                                    // se o melhor valor encontrado do filho for maior do que o valor registrado no pai
+                                    if(bestValue > current.getValue()){
+                                        current.setValue(bestValue);
+                                        if(depth == 0){
+                                            transferPositions(best, current);
+                                        }
+                                    }
+                                }
+                                // se for MIN
+                                else{
+                                    // procurando melhor valor no filho
+                                    PositionsNode best = minMax(child, board, depth+1, maxDepth, true, allyColor);
+                                    double bestValue = best.getValue();
+                                    // se o melhor valor encontrado do filho for menor do que o valor registrado no pai
+                                    if(bestValue < current.getValue()){
+                                        current.setValue(bestValue);
+                                        if(depth == 0){
+                                            transferPositions(best, current);
+                                        }
+                                    }
+                                }
+                                // retornando backup
+                                board.returnBackup();
+                            }
+                        }
                     }
                 }
             }
-            // retornando melhor valor encontrado
-            return current.getValue();
         }
+        // retornando Node atual com o melhor valor encontrado entre os filhos
+        return current;
+    }
+
+    private static void searchBest(PositionsNode current, BoardController board, int depth, int maxDepth, boolean isMax, PieceColor allyColor) {
+        // se for MAX
+        if(isMax) {
+            // procurando melhor valor no filho do filho
+            PositionsNode best = minMax(current, board, depth+1, maxDepth, false, allyColor);
+            double bestValue = best.getValue();
+            // se o melhor valor encontrado do filho for maior do que o valor registrado no pai
+            if(bestValue > current.getValue()){
+                current.setValue(bestValue);
+                if(depth == 0){
+                    transferPositions(best, current);
+                }
+            }
+        }
+        // se for MIN
+        else{
+            // procurando melhor valor no filho
+            PositionsNode best = minMax(current, board, depth+1, maxDepth, true, allyColor);
+            double bestValue = best.getValue();
+            // se o melhor valor encontrado do filho for menor do que o valor registrado no pai
+            if(bestValue < current.getValue()){
+                current.setValue(bestValue);
+                if(depth == 0){
+                    transferPositions(best, current);
+                }
+            }
+        }
+    }
+
+    private static void transferPositions(PositionsNode from, PositionsNode to){
+        to.setFromLine(from.getFromLine());
+        to.setFromColumn(from.getFromColumn());
+        to.setToLine(from.getToLine());
+        to.setToColumn(from.getToColumn());
     }
 
     private static double heuristic(BoardController state, PieceColor allyColor){

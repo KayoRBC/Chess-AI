@@ -1,11 +1,16 @@
 package com.Kayo.controller;
 
+import com.Kayo.model.backup.Backup;
 import com.Kayo.model.chass.Board;
 import com.Kayo.model.chass.Piece.*;
 import com.Kayo.util.PieceColor;
 import com.Kayo.util.PieceType;
 
+import java.util.ArrayList;
+
 public class BoardController {
+
+    private ArrayList<Backup> backups = new ArrayList<>();
 
     private Board board;
 
@@ -59,6 +64,9 @@ public class BoardController {
 
                     // se for movimento valido de acordo com a regra da peca origem
                     if (fromPiece.isValidMove(board, fromLine, fromColumn, toLine, toColumn)) {
+
+                        // criando backup antes de realizar a jogada
+                        addBackup(fromLine, fromColumn, toLine, toColumn);
 
                         // se nao foi possivel aplicar o Roque
                         if(!applyCastling(fromLine, fromColumn, toLine, toColumn)) {
@@ -174,6 +182,43 @@ public class BoardController {
             }
         }
         // nao xeque mate
+        return false;
+    }
+
+    private boolean addBackup(int fromLine, int fromColumn, int toLine, int toColumn){
+        // pegando pecas
+        Piece fromPiece = board.getPiece(fromLine, fromColumn);
+        Piece toPiece = board.getPiece(toLine, toColumn);
+        // se as pecas existirem
+        if(fromPiece != null && toPiece != null) {
+            // criando backup
+            Backup newBackup = new Backup(board, isUserTurn, isOpponentWon, isUserWon);
+            // adicionando backup a lista de backups
+            backups.add(newBackup);
+            // backup adicionado
+            return true;
+        }
+        // backup nao adicionado
+        return false;
+    }
+
+    public boolean returnBackup(){
+        // se existir backups anteriores
+        if(backups.size() > 0){
+            Backup last = backups.get(backups.size()-1);
+            // voltando estado do tabuleiro
+            this.board = last.getBoard();
+            this.isUserTurn = last.isUserTurn();
+            this.isOpponentWon = last.isOpponentWon();
+            this.isUserWon = last.isUserTurn();
+
+            // deletando backup da lista de backups
+            backups.remove(last);
+
+            // backup realizado
+            return true;
+        }
+        // backup nao realizado
         return false;
     }
 
