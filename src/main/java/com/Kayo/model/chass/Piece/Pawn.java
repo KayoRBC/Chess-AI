@@ -6,77 +6,62 @@ import com.Kayo.util.PieceType;
 
 public class Pawn extends Piece{
 
-    private final int VERTICAL_DIRECTION;
-
     public Pawn(PieceColor color) {
         super(color, PieceType.PAWN);
-        // se peca for branca
-        if(getColor() == PieceColor.WHITE){
-            VERTICAL_DIRECTION = -1; // CIMA
-        }
-        // se peca for preta
-        else{
-            VERTICAL_DIRECTION = 1; // BAIXO
-        }
     }
 
     @Override
     public boolean isValidMove(Board board, int fromLine, int fromColumn, int toLine, int toColumn) {
-        // pegando pecas do tabuleiro
-        Piece fromPiece = board.getPiece(fromLine, fromColumn);
-        Piece toPiece = board.getPiece(toLine, toColumn);
-        // se as pecas existirem
-        if(fromPiece != null && toPiece != null){
-            // se a cor das pecas forem diferentes
-            if(fromPiece.getColor() != toPiece.getColor()){
-                // valido se movimento valido para frente ou diagonal
-                return (isVerticalValid(board, fromLine, fromColumn, toLine, toColumn)
-                        || isDiagonalValid(board, fromLine, fromColumn, toLine, toColumn));
+        // se as pecas existirem e forem de cores diferentes
+        if(verifyPieces(board, false, fromLine, fromColumn, toLine, toColumn)) {
+            // se a direcao de movimentacao for certa
+            if (verifyDirection(board, fromLine, fromColumn, toLine)) {
+                Piece toPiece = board.getPiece(toLine, toColumn);
+                // verificando se eh possivel fazer movimento para frente ate duas casas
+                if(isVerticalValid(board, fromLine, fromColumn, toLine, toColumn, 2)) {
+                    // se for duas casas para frente
+                    if(toPiece.getType() == PieceType.NULL){
+                        Piece fromPiece = board.getPiece(fromLine, fromColumn);
+                        // se for duas casas para frente e a peca ja foi movimentada
+                        if(Math.abs(fromLine - toLine) == 2 && fromPiece.hasMoved()){
+                            // invalido
+                            return false;
+                        }
+                        // valido
+                        return true;
+                    }
+                }
+                // verificando diagonal
+                else if (isDiagonalValid(board, fromLine, fromColumn, toLine, toColumn, 1)){
+                    // valido se peca destino nao eh vazia
+                    return (toPiece.getType() != PieceType.NULL);
+                }
             }
         }
         // movimento invalido
         return false;
     }
 
-    private boolean isVerticalValid(Board board, int fromLine, int fromColumn, int toLine, int toColumn){
-        // pegando pecas do tabuleiro
+    private boolean verifyDirection(Board board, int fromLine, int fromColumn, int toLine){
         Piece fromPiece = board.getPiece(fromLine, fromColumn);
-        Piece toPiece = board.getPiece(toLine, toColumn);
-
-        // calculando distancias
-        int lineDistance = toLine - fromLine;
-        int columnDistance = toColumn - fromColumn;
-        // se for na mesma coluna e peca destino for vazia
-        if(columnDistance == 0 && toPiece.getType() == PieceType.NULL) {
-            // se um para frente
-            if (lineDistance == VERTICAL_DIRECTION) {
-                return true;
-            }
-            // se dois para frente
-            else if (!fromPiece.hasMoved() && lineDistance == 2 * VERTICAL_DIRECTION) {
-                Piece intermediatePiece = board.getPiece(fromLine + VERTICAL_DIRECTION, fromColumn);
-                // se peca intermediaria for vazia
-                if(intermediatePiece.getType() == PieceType.NULL){
-                    return true;
-                }
-            }
+        // se peca for branca
+        if(fromPiece.getColor() == PieceColor.WHITE && fromLine - toLine > 0){
+            // direcao certa
+            return true;
         }
-        // invalido
+        // se peca for preta
+        if(fromPiece.getColor() == PieceColor.BLACK && fromLine - toLine < 0){
+            // direcao certa
+            return true;
+        }
+        // dicrecao errada
         return false;
     }
 
-    private boolean isDiagonalValid(Board board, int fromLine, int fromColumn, int toLine, int toColumn){
-        // calculando distancias
-        int lineDistance = toLine - fromLine;
-        int columnDistance = toColumn - fromColumn;
-        // se direcao vertial certa e movimento de uma casa para a diagonal
-        if(lineDistance == VERTICAL_DIRECTION && Math.abs(columnDistance) == 1){
-            Piece toPiece = board.getPiece(toLine, toColumn);
-            // valido se o destino possui uma peca nao vazia
-            return (toPiece.getType() != PieceType.NULL);
-        }
-        // invalido
-        return false;
+    @Override
+    public Piece createClone() {
+        Piece clone = new Pawn(getColor());
+        clone.setHasMoved(super.hasMoved());
+        return clone;
     }
-
 }

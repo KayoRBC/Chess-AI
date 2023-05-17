@@ -67,29 +67,7 @@ public class BoardPanel extends JPanel implements Runnable{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        insertPiecesButtons();
-        while(GAME_THREAD != null) {
-            repaint();
-            // se nao for o turno do oponente
-            if (!BOARD_CONTROLLER.isUserTurn()) {
-                // tentanto movimento com AI
-                if (AI_CONTROLLER.play()) {
-                    System.out.println("AI conseguiu mover");
-                } else {
-                    System.out.println("AI nao conseguiu mover");
-                }
-
-                // verificando se foi xeque mate
-                if(BOARD_CONTROLLER.checkMate(USER_COLOR)){
-                    System.out.println("Rei do usuario tomou xeque mate");
-                }
-                // verificando xeque mate no rei do oponente
-                if (BOARD_CONTROLLER.checkMate(OPPONENT_COLOR)){
-                    System.out.println("Rei do oponente tomou xeque mate");
-                }
-            }
-        }
+        addPiecesButtons();
     }
 
     // chamado pelo metodo repaint()
@@ -102,7 +80,7 @@ public class BoardPanel extends JPanel implements Runnable{
         // desenhando pecas
         drawPieces(g2);
 
-        g2.dispose();
+        //g2.dispose();
     }
 
     private void drawBackGround(Graphics2D g2){
@@ -134,13 +112,15 @@ public class BoardPanel extends JPanel implements Runnable{
         }
     }
 
-    private void insertPiecesButtons(){
+    private void addPiecesButtons(){
         // percorrendo posicoes do tabuleiro
         for(int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                // inserindo um botao invisivel em cada posicao do tabuleiro
-                PieceButton button = new PieceButton(i, j, IMAGE_SIZE, this);
-                button.insertButton();
+                // criando botao da peca
+                JButton button = new PieceButton(i, j, this);
+                // inserindo botao na tela
+                button.setBounds(j * IMAGE_SIZE, i * IMAGE_SIZE, IMAGE_SIZE, IMAGE_SIZE);
+                add(button);
             }
         }
     }
@@ -165,23 +145,78 @@ public class BoardPanel extends JPanel implements Runnable{
         if(select == 2){
             System.out.println("Usuario tentanto mover:");
             System.out.println("From line: "+ fromLineButton +" Column: "+ fromColumnButton +" | To line: "+ toLineButton +" Column: "+ toColumnButton);
-
-            // tentanto movimento do usuario
-            if(BOARD_CONTROLLER.move(true, fromLineButton, fromColumnButton, toLineButton, toColumnButton)){
-                System.out.println("Usuaruio conseguiu mover");
-            }
-            else{
-                System.out.println("Usuario nao conseguiu mover");
-            }
+            play();
             select = 0;
-            // verificando se foi xeque mate
-            if(BOARD_CONTROLLER.checkMate(USER_COLOR)){
-                System.out.println("Rei do usuario tomou xeque mate");
-            }
-            // verificando xeque mate no rei do oponente
-            if (BOARD_CONTROLLER.checkMate(OPPONENT_COLOR)){
-                System.out.println("Rei do oponente tomou xeque mate");
-            }
         }
     }
+
+    private void play(){
+        // jogador tenta fazer jogada
+        userPlay();
+
+        // removendo todos os componentes
+        removeAll();
+        // adicionando componentes dos botoes
+        addPiecesButtons();
+
+        // atualizando tela imediatamente
+        paintImmediately(getBounds());
+
+        // oponente tenta fazer jogada
+        opponentPlay();
+
+        // verificando vitoria
+        verifyWin();
+
+        // atualizando tela
+        repaint();
+    }
+
+    private boolean userPlay(){
+        // tentanto movimento do usuario
+        if(BOARD_CONTROLLER.move(true, fromLineButton, fromColumnButton, toLineButton, toColumnButton)){
+            System.out.println("Usuaruio conseguiu mover");
+            verifyCheck();
+            return true;
+        }
+        else{
+            System.out.println("Usuario nao conseguiu mover");
+            return false;
+        }
+    }
+
+    private boolean opponentPlay(){
+        // tentanto movimento com AI
+        if (AI_CONTROLLER.play()) {
+            System.out.println("Oponente conseguiu mover");
+            verifyCheck();
+            return true;
+        } else {
+            System.out.println("Oponente nao conseguiu mover");
+            return false;
+        }
+    }
+
+    private void verifyCheck(){
+        // verificando se foi xeque no rei do usuario
+        if(BOARD_CONTROLLER.check(USER_COLOR)){
+            System.out.println("Rei do usuario tomou xeque");
+        }
+        // verificando xeque no rei do oponente
+        if (BOARD_CONTROLLER.check(OPPONENT_COLOR)){
+            System.out.println("Rei do oponente tomou xeque");
+        }
+    }
+
+    private void verifyWin(){
+        // se o oponente venceu
+        if(BOARD_CONTROLLER.isOpponentWon()){
+            System.out.println("Oponente venceu");
+        }
+        // se o usuario venceu
+        else if(BOARD_CONTROLLER.isUserWon()){
+            System.out.println("Jogador venceu");
+        }
+    }
+
 }

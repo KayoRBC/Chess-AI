@@ -12,57 +12,22 @@ public class Bishop extends Piece{
 
     @Override
     public boolean isValidMove(Board board, int fromLine, int fromColumn, int toLine, int toColumn) {
-        // pegando pecas do tabuleiro
-        Piece fromPiece = board.getPiece(fromLine, fromColumn);
-        Piece toPiece = board.getPiece(toLine, toColumn);
-        // se as pecas existirem
-        if(fromPiece != null && toPiece != null){
-            // se a cor das pecas forem diferentes
-            if(fromPiece.getColor() != toPiece.getColor()){
-                // valido se movimento valido diagonal
-                return isDiagonalValid(board, fromLine, fromColumn, toLine, toColumn);
+        // se as posicoes existirem e forem de cores diferentes
+        if(verifyPieces(board, false, fromLine, fromColumn, toLine, toColumn)){
+            // se ter apenas pecas intermediaris vazias
+            if(isDiagonalValid(board, fromLine, fromColumn, toLine, toColumn, 7)){
+                return true;
             }
         }
+
         // movimento invalido
         return false;
     }
 
-    private boolean isDiagonalValid(Board board, int fromLine, int fromColumn, int toLine, int toColumn){
-        // se o movimento eh diagonal
-        if(isDiagonalMove(fromLine, fromColumn, toLine, toColumn)){
-            int[] intermediateLines = Util.createIntermediateValues(fromLine, toLine);
-            int[] intermediateColumns = Util.createIntermediateValues(fromColumn, toColumn);
-            // valido se as pecas intermedias sao validas
-            return isIntermediateValid(board, intermediateLines, intermediateColumns);
-        }
-        // movimento invalido
-        return false;
-    }
-
-    private boolean isDiagonalMove(int fromLine, int fromColumn, int toLine, int toColumn){
-        // calculando distancias
-        int lineDistance = toLine - fromLine;
-        int columnDistance = toColumn - fromColumn;
-        // valido se a distancia entre as linhas eh igual a distancia entre as colunas
-        return (Math.abs(lineDistance) == Math.abs(columnDistance));
-    }
-
-    private boolean isIntermediateValid(Board board, int[] intermediateLines, int[] intermediateColumns){
-        // se existir posicoes intermediarias ao movimento
-        if(intermediateLines != null && intermediateColumns != null){
-            // verifica se alguma peca intermediaria nao eh vazia
-            for(int i = 0; i < intermediateLines.length; i++){
-                int line = intermediateLines[i];
-                int column = intermediateColumns[i];
-                Piece piece = board.getPiece(line, column);
-                // se nao for vazia
-                if(piece.getType() != PieceType.NULL){
-                    // movimento invalido
-                    return false;
-                }
-            }
-        }
-        // valido
-        return true;
+    @Override
+    public Piece createClone() {
+        Piece clone = new Bishop(getColor());
+        clone.setHasMoved(super.hasMoved());
+        return clone;
     }
 }

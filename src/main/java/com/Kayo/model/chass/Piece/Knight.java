@@ -11,16 +11,10 @@ public class Knight extends Piece{
 
     @Override
     public boolean isValidMove(Board board, int fromLine, int fromColumn, int toLine, int toColumn) {
-        // pegando pecas do tabuleiro
-        Piece fromPiece = board.getPiece(fromLine, fromColumn);
-        Piece toPiece = board.getPiece(toLine, toColumn);
-        // se as pecas existirem
-        if(fromPiece != null && toPiece != null){
-            // se a cor das pecas forem diferentes
-            if(fromPiece.getColor() != toPiece.getColor()){
-                // verifica se o movimento eh em L
-                return isLValid(fromLine, fromColumn, toLine, toColumn);
-            }
+        // se as posicoes existirem e forem de cores diferentes
+        if(verifyPieces(board, false, fromLine, fromColumn, toLine, toColumn)){
+            // valido se movimento em L
+            return isLValid(fromLine, fromColumn, toLine, toColumn);
         }
         // movimento invalido
         return false;
@@ -33,5 +27,12 @@ public class Knight extends Piece{
         // valido se movimento for em L
         return ((Math.abs(lineDistance) == 2 && Math.abs(columnDistance) == 1) ||
                 (Math.abs(lineDistance) == 1 && Math.abs(columnDistance) == 2));
+    }
+
+    @Override
+    public Piece createClone() {
+        Piece clone = new Knight(getColor());
+        clone.setHasMoved(super.hasMoved());
+        return clone;
     }
 }

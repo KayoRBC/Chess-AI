@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 public abstract class ImageController {
 
@@ -17,14 +18,14 @@ public abstract class ImageController {
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
                 try {
-                    String path;
+                    URL path;
                     if(isDark){
-                        path = BoardPanel.class.getClassLoader().getResource("images/background/square_dark_brown.png").getPath();
+                        path = BoardPanel.class.getResource("/images/background/square_dark_brown.png");
                     }
                     else{
-                        path = BoardPanel.class.getClassLoader().getResource("images/background/square_light_brown.png").getPath();
+                        path = BoardPanel.class.getResource("/images/background/square_light_brown.png");
                     }
-                    board[i][j] = ImageIO.read(new File(path));
+                    board[i][j] = ImageIO.read(path);
                     isDark = !isDark;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -62,13 +63,13 @@ public abstract class ImageController {
 
     private static BufferedImage loadPiece(String pieceNamePng){
         // pegando caminho da imagem
-        String path;
-        path = BoardPanel.class.getClassLoader().getResource("images/pieces/"+pieceNamePng+".png").getPath();
+        URL path;
+        path = BoardPanel.class.getResource("/images/pieces/"+pieceNamePng+".png");
 
         // carregando imagem
         BufferedImage image = null;
         try {
-            image = ImageIO.read(new File(path));
+            image = ImageIO.read(path);
         } catch (IOException e) {
             e.printStackTrace();
         }

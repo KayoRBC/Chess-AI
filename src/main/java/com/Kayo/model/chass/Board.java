@@ -102,6 +102,18 @@ public class Board {
         }
     }
 
+    public boolean setPiece(Piece piece, int line, int column, boolean hasMoved){
+        // se linha e coluna estiverem dentro do tabuleiro
+        if(-1 < line && line < 8 && -1 < column && column < 8){
+            pieces[line][column] = piece;
+            pieces[line][column].setHasMoved(hasMoved);
+            // inserido
+            return true;
+        }
+        // nao inserido
+        return false;
+    }
+
     public boolean isDungerousPosition(PieceColor allyColor, int checkLine, int checkColumn){
         // pegando cada posicao do tabuleiro
         for(int fromLine = 0; fromLine < 8; fromLine++){
@@ -150,21 +162,7 @@ public class Board {
                 // pegando peca do tabuleiro original
                 Piece original = pieces[i][j];
                 // inserindo clone dessa peca no tabuleiro clone
-                switch (original.getType()) {
-                    case BISHOP -> piecesClone[i][j] = new Bishop(original.getColor());
-                    case KING -> piecesClone[i][j] = new King(original.getColor());
-                    case KNIGHT -> piecesClone[i][j] = new Knight(original.getColor());
-                    case PAWN -> piecesClone[i][j] = new Pawn(original.getColor());
-                    case QUEEN -> piecesClone[i][j] = new Queen(original.getColor());
-                    case ROOK -> piecesClone[i][j] = new Rook(original.getColor());
-                    default -> piecesClone[i][j] = new NullPiece();
-                }
-                // atualizando estado do clone
-                piecesClone[i][j].setHasMoved(original.hasMoved());
-                // atualizando estado do rei se a peca de copia for o rei
-                if(piecesClone[i][j] instanceof King && original instanceof King){
-                    ((King) piecesClone[i][j]).setCheckMated(((King) original).isCheckMated());
-                }
+                piecesClone[i][j] = original.createClone();
             }
         }
         // retornando tabuleiro clone
