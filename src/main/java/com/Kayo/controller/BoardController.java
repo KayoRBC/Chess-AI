@@ -210,7 +210,7 @@ public class BoardController {
             this.board = last.getBoard();
             this.isUserTurn = last.isUserTurn();
             this.isOpponentWon = last.isOpponentWon();
-            this.isUserWon = last.isUserTurn();
+            this.isUserWon = last.isUserWon();
 
             // deletando backup da lista de backups
             backups.remove(last);
