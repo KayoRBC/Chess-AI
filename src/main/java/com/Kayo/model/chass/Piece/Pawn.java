@@ -58,4 +58,10 @@ public class Pawn extends Piece{
         return false;
     }
 
+    @Override
+    public Piece createClone() {
+        Piece clone = new Pawn(getColor());
+        clone.setHasMoved(super.hasMoved());
+        return clone;
+    }
 }

@@ -23,5 +23,8 @@ public class Queen extends Piece{
         return false;
     }
 
-
+    @Override
+    public Piece createClone() {
+        return new Queen(getColor());
+    }
 }

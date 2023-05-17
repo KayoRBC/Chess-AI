@@ -72,4 +72,11 @@ public class Rook extends Piece{
         // posicoes perigoras
         return false;
     }
+
+    @Override
+    public Piece createClone() {
+        Piece clone = new Rook(getColor());
+        clone.setHasMoved(super.hasMoved());
+        return clone;
+    }
 }

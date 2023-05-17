@@ -23,4 +23,11 @@ public class Bishop extends Piece{
         // movimento invalido
         return false;
     }
+
+    @Override
+    public Piece createClone() {
+        Piece clone = new Bishop(getColor());
+        clone.setHasMoved(super.hasMoved());
+        return clone;
+    }
 }

@@ -30,4 +30,11 @@ public class King extends Piece{
                 && (Math.abs(lineDistance) < 2 && Math.abs(columnDistance) < 2));
 
     }
+
+    @Override
+    public Piece createClone() {
+        Piece clone = new King(getColor());
+        clone.setHasMoved(super.hasMoved());
+        return clone;
+    }
 }

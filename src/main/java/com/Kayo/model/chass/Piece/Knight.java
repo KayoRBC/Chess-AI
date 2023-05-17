@@ -28,4 +28,11 @@ public class Knight extends Piece{
         return ((Math.abs(lineDistance) == 2 && Math.abs(columnDistance) == 1) ||
                 (Math.abs(lineDistance) == 1 && Math.abs(columnDistance) == 2));
     }
+
+    @Override
+    public Piece createClone() {
+        Piece clone = new Knight(getColor());
+        clone.setHasMoved(super.hasMoved());
+        return clone;
+    }
 }
