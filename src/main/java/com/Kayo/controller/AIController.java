@@ -3,6 +3,7 @@ package com.Kayo.controller;
 import com.Kayo.model.ai.MinMax;
 import com.Kayo.model.ai.PositionsNode;
 import com.Kayo.util.PieceColor;
+import com.Kayo.util.PieceType;
 
 public class AIController {
     private final PieceColor AI_COLOR;
@@ -29,6 +30,11 @@ public class AIController {
 
             // se for possivel mover
             if(BOARD_CONTROLLER.move(false, fromLine, fromColumn, toLine, toColumn)){
+
+                // se for for troca de peao
+                if(BOARD_CONTROLLER.isPawnChange() && !(BOARD_CONTROLLER.isUserTurn())){;
+                    BOARD_CONTROLLER.changePawnType(true, PieceType.QUEEN);
+                }
                 moved = true;
             }
         }

@@ -9,6 +9,7 @@ import com.Kayo.util.PieceType;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Scanner;
 
 public class BoardPanel extends JPanel implements Runnable{
 
@@ -172,10 +173,37 @@ public class BoardPanel extends JPanel implements Runnable{
         repaint();
     }
 
+    private PieceType selectPawnTypeChange(){
+        PieceType[] types = {PieceType.KNIGHT, PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN};
+        for(int i = 0; i < types.length; i++){
+            System.out.println((i+1)+" - "+types[i]);
+        }
+        Scanner sc = new Scanner(System.in);
+        int option = -1;
+        while(option < 1 || option > types.length){
+            System.out.println("Escolha uma opcao");
+            option = sc.nextInt();
+            if(option < 1 || option > types.length){
+                System.out.println("Opcao invalida! Digite novamente");
+            }
+        }
+        return types[option-1];
+
+    }
+
     private boolean userPlay(){
         // tentanto movimento do usuario
         if(BOARD_CONTROLLER.move(true, fromLineButton, fromColumnButton, toLineButton, toColumnButton)){
             System.out.println("Usuaruio conseguiu mover");
+            // se o peao do jogador chegar no final do tabuleiro
+            if(BOARD_CONTROLLER.isPawnChange() && BOARD_CONTROLLER.isUserTurn()){
+                // atualizando tela com a movimentacao
+                paintImmediately(getBounds());
+                // selecionando tipo para troca do peao por nova peca
+                PieceType type = selectPawnTypeChange();
+                // trocando peao por nova peca
+                BOARD_CONTROLLER.changePawnType(true, type);
+            }
             verifyCheck();
             return true;
         }

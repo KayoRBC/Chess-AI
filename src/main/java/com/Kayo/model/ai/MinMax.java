@@ -38,6 +38,11 @@ public abstract class MinMax {
 
                             // se conseguir fazer movimento de fromPiece para toPiece
                             if(board.move(board.isUserTurn(), fromLine, fromColumn, toLine, toColumn)){
+                                // se for for troca de peao
+                                if(board.isPawnChange()){;
+                                    board.changePawnType(board.isUserTurn(), PieceType.QUEEN);
+                                }
+
                                 // criando filho
                                 PositionsNode child = new PositionsNode(fromLine, fromColumn, toLine, toColumn);
 

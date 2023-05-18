@@ -2,6 +2,7 @@ package com.Kayo.model.chass;
 
 import com.Kayo.model.chass.Piece.*;
 import com.Kayo.util.PieceColor;
+import com.Kayo.util.PieceType;
 
 public class Board {
 
@@ -107,6 +108,31 @@ public class Board {
         if(-1 < line && line < 8 && -1 < column && column < 8){
             pieces[line][column] = piece;
             pieces[line][column].setHasMoved(hasMoved);
+            // inserido
+            return true;
+        }
+        // nao inserido
+        return false;
+    }
+
+    public boolean setPiece(PieceType type, PieceColor color, int line, int column, boolean hasMoved){
+        // se linha e coluna estiverem dentro do tabuleiro
+        if(-1 < line && line < 8 && -1 < column && column < 8){
+            Piece piece;
+            switch (type) {
+                case PAWN -> piece = new Pawn(color);
+                case KNIGHT -> piece = new Knight(color);
+                case BISHOP -> piece = new Bishop(color);
+                case ROOK -> piece = new Rook(color);
+                case QUEEN -> piece = new Queen(color);
+                case KING -> piece = new King(color);
+                default -> {
+                    return false;
+                }
+            }
+            // atualizando estado
+            piece.setHasMoved(hasMoved);
+            pieces[line][column] = piece;
             // inserido
             return true;
         }

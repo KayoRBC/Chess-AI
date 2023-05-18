@@ -11,11 +11,14 @@ public class Backup {
     private final boolean isOpponentWon;
     private final boolean isUserWon;
 
-    public Backup(Board board, boolean isUserTurn, boolean isOpponentWon, boolean isUserWon) {
+    private final boolean isPawnChange;
+
+    public Backup(Board board, boolean isUserTurn, boolean isOpponentWon, boolean isUserWon, boolean isPawnChange) {
         this.board = board.createClone();
         this.isUserTurn = isUserTurn;
         this.isOpponentWon = isOpponentWon;
         this.isUserWon = isUserWon;
+        this.isPawnChange = isPawnChange;
     }
 
     public Board getBoard() {
@@ -32,5 +35,9 @@ public class Backup {
 
     public boolean isUserWon() {
         return isUserWon;
+    }
+
+    public boolean isPawnChange() {
+        return isPawnChange;
     }
 }
