@@ -36,21 +36,6 @@ public class BoardController {
         }
     }
 
-    private BoardController(Board board, boolean isUserTurn, boolean isUserWon, boolean isOpponentWon, PieceColor USER_COLOR){
-        this.board = board;
-        this.isUserTurn = isUserTurn;
-        this.isUserWon = isUserWon;
-        this.isOpponentWon = isOpponentWon;
-        this.USER_COLOR = USER_COLOR;
-        // seleciona cor da peca oponente de acordo com a peca do usuario
-        if(USER_COLOR == PieceColor.WHITE){
-            OPPONENT_COLOR = PieceColor.BLACK;
-        }
-        else{
-            OPPONENT_COLOR = PieceColor.WHITE;
-        }
-    }
-
     public boolean move(boolean isUser, int fromLine, int fromColumn, int toLine, int toColumn){
         // se nenhum jogador venceu ainda
         if(!isUserWon && !isOpponentWon) {
@@ -231,10 +216,6 @@ public class BoardController {
     public PieceColor getColorOf(int line, int column){
         Piece piece = board.getPiece(line, column);
         return piece.getColor();
-    }
-
-    public BoardController createClone(){
-        return new BoardController(board.createClone(), isUserWon, isOpponentWon, isUserTurn, USER_COLOR);
     }
 
     public boolean isUserTurn() {
