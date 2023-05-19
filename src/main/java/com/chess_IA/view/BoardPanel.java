@@ -11,7 +11,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Scanner;
 
-public class BoardPanel extends JPanel implements Runnable{
+public class BoardPanel extends JComponent{
 
     // SCREEN SETTINGS
     private final int ORIGINAL_IMAGE_SIZE = 128; // 16x16 px
@@ -47,22 +47,6 @@ public class BoardPanel extends JPanel implements Runnable{
 
         BOARD_CONTROLLER = new BoardController(true, userColor);
         AI_CONTROLLER = new AIController(PieceColor.getOpponentOf(USER_COLOR), BOARD_CONTROLLER);
-    }
-
-    // funcao que inicia a thread
-    public void startGameThread() {
-        GAME_THREAD = new Thread(this);
-        GAME_THREAD.start();
-    }
-
-    // iniciando thread para inserir botoes apos 1 segundo por questoes de bug
-    @Override
-    public void run() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         addPiecesButtons();
     }
 
@@ -76,7 +60,7 @@ public class BoardPanel extends JPanel implements Runnable{
         // desenhando pecas
         drawPieces(g2);
 
-        //g2.dispose();
+        g2.dispose();
     }
 
     // desenha o fundo do tabuleiro

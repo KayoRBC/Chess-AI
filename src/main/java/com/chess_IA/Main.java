@@ -21,7 +21,6 @@ public class Main {
         // criando tela do tabuleiro
         BoardPanel boardPanel = new BoardPanel(USER_COLOR);
 
-
         // inserindo tela do tabuleiro na tela principal
         window.add(boardPanel);
 
@@ -32,7 +31,7 @@ public class Main {
         window.setVisible(true);
 
         // iniciando thread do tabuleiro para inserir os botoes das pecas
-        boardPanel.startGameThread();
+        //boardPanel.startGameThread();
 
     }
 }
