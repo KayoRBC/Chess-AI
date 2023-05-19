@@ -16,10 +16,15 @@ public class Main {
 
         // definindo cor do usuario
         final PieceColor USER_COLOR = PieceColor.BLACK;
+
+        // definindo quem vai comecar
+        boolean isUserStart = true;
+
+        // definindo direcao do tabuleiro
         PieceColor.setIsWhiteUp(true);
 
         // criando tela do tabuleiro
-        BoardPanel boardPanel = new BoardPanel(USER_COLOR);
+        BoardPanel boardPanel = new BoardPanel(USER_COLOR, isUserStart);
 
         // inserindo tela do tabuleiro na tela principal
         window.add(boardPanel);

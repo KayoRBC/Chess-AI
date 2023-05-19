@@ -23,8 +23,6 @@ public class BoardPanel extends JComponent{
     private final int SCREEN_WIDTH = IMAGE_SIZE * MAX_SCREEN_COL; // largura da tela
     private final int SCREEN_HEIGHT = IMAGE_SIZE * MAX_SCREEN_ROW; // altura da tela
 
-    Thread GAME_THREAD;
-
     // cor do jogador
     private final PieceColor USER_COLOR;
 
@@ -39,15 +37,19 @@ public class BoardPanel extends JComponent{
     private int toColumnButton = 0;
     private int select = 0;
 
-    public BoardPanel(PieceColor userColor) {
+    public BoardPanel(PieceColor userColor, boolean isUserStart) {
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
         this.USER_COLOR = userColor;
 
-        BOARD_CONTROLLER = new BoardController(true, userColor);
+        BOARD_CONTROLLER = new BoardController(isUserStart, userColor);
         AI_CONTROLLER = new AIController(PieceColor.getOpponentOf(USER_COLOR), BOARD_CONTROLLER);
         addPiecesButtons();
+        // se o jogador nao comecar
+        if(!BOARD_CONTROLLER.isUserTurn()){
+            AI_CONTROLLER.play();
+        }
     }
 
     // chamado pelo metodo repaint()
