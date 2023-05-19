@@ -113,30 +113,36 @@ public class BoardPanel extends JComponent{
     }
 
     // funcao que os botoes das pecas chamam para inserir os valores das posicoes from e to
-    public void selectPosition(int line, int column){
-        // se botoes selecionados for 0
-        if(select == 0){
-            // inserindo posicao do primeiro botao
-            fromLineButton = line;
-            fromColumnButton = column;
-        }
-        // se botoes selecionas for 1
-        else if (select == 1){
-            // inserindo posicao do segundo botao
-            toLineButton = line;
-            toColumnButton = column;
-        }
-        // atualizando contagem de botoes selecionados
-        select++;
+    // return true caso tenha sido selecionado
+    // return false cao nao tenha sido selecionado
+    public boolean selectPosition(int line, int column){
+        if(BOARD_CONTROLLER.isUserTurn()) {
+            // se botoes selecionados for 0
+            if (select == 0) {
+                // inserindo posicao do primeiro botao
+                fromLineButton = line;
+                fromColumnButton = column;
+            }
+            // se botoes selecionas for 1
+            else if (select == 1) {
+                // inserindo posicao do segundo botao
+                toLineButton = line;
+                toColumnButton = column;
+            }
+            // atualizando contagem de botoes selecionados
+            select++;
 
-        // se botoes selecionados for 2
-        if(select == 2){
-            System.out.println("Usuario tentanto mover:");
-            System.out.println("From line: "+ fromLineButton +" Column: "+ fromColumnButton +" | To line: "+ toLineButton +" Column: "+ toColumnButton);
-            // iniciando jogadas do jogador e do oponente
-            play();
-            select = 0;
+            // se botoes selecionados for 2
+            if (select == 2) {
+                System.out.println("Usuario tentanto mover:");
+                System.out.println("From line: " + fromLineButton + " Column: " + fromColumnButton + " | To line: " + toLineButton + " Column: " + toColumnButton);
+                // iniciando jogadas do jogador e do oponente
+                play();
+                select = 0;
+            }
+            return true;
         }
+        return false;
     }
 
     // inicia jogadas do usuario e do oponente

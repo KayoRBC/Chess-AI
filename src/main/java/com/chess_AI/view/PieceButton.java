@@ -24,17 +24,20 @@ public class PieceButton extends JButton{
         setContentAreaFilled(false);
         setBorderPainted(false);
         setRolloverEnabled(false); // efeito de quando coloca o mouse em cima do botao sendo desabilitado
+        setPressedIcon(null); // remove o icone exibido quando o botao eh selecionado
+        setDisabledIcon(null); // remove o icone exibido quando o botao esta desativado
+        setFocusPainted(false); // desabilita o destaque visual quando o botao esta em foco
 
         // inserindo funcao de execucao quando apertar o botao
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // inserindo posicoes do botao no board panel
-                BOARD_PANEL.selectPosition(LINE, COLUMN);
-                // mudando cor do botao selecionado
-                setContentAreaFilled(true);
-                setBackground(new Color(255, 0, 0, 166));
-
+                // se der certo de selecionar a posicao no tabuleiro
+                if(BOARD_PANEL.selectPosition(LINE, COLUMN)) {
+                    // mudando cor do botao selecionado
+                    setContentAreaFilled(true);
+                    setBackground(new Color(255, 0, 0, 166));
+                }
             }
         });
     }
