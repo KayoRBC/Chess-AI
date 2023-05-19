@@ -96,6 +96,8 @@ public class BoardPanel extends JComponent{
 
     // insere os botoes das pecas na tela
     private void addPiecesButtons(){
+        // removendo todos os componentes
+        removeAll();
         // percorrendo posicoes do tabuleiro
         for(int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -140,8 +142,6 @@ public class BoardPanel extends JComponent{
         // jogador tenta fazer jogada
         userPlay();
 
-        // removendo todos os componentes
-        removeAll();
         // adicionando componentes dos botoes
         addPiecesButtons();
 

@@ -23,6 +23,7 @@ public class PieceButton extends JButton{
         setOpaque(false);
         setContentAreaFilled(false);
         setBorderPainted(false);
+        setRolloverEnabled(false); // efeito de quando coloca o mouse em cima do botao sendo desabilitado
 
         // inserindo funcao de execucao quando apertar o botao
         addActionListener(new ActionListener() {
@@ -31,8 +32,9 @@ public class PieceButton extends JButton{
                 // inserindo posicoes do botao no board panel
                 BOARD_PANEL.selectPosition(LINE, COLUMN);
                 // mudando cor do botao selecionado
-                setBackground(new Color(255, 0, 0, 166));
                 setContentAreaFilled(true);
+                setBackground(new Color(255, 0, 0, 166));
+
             }
         });
     }
