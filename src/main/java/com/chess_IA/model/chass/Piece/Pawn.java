@@ -45,17 +45,19 @@ public class Pawn extends Piece{
     private boolean verifyDirection(Board board, int fromLine, int fromColumn, int toLine){
         Piece fromPiece = board.getPiece(fromLine, fromColumn);
         // se peca for branca
-        if(fromPiece.getColor() == PieceColor.WHITE && fromLine - toLine > 0){
-            // direcao certa
-            return true;
+        if(fromPiece.getColor() == PieceColor.WHITE){
+            // se branca comeca por cima | valido se estar se movimentando para baixo
+            if(PieceColor.isWhiteUp()) return fromLine - toLine < 0;
+            // se branca comeca por baixo | valido se estar se movimentando para cima
+            else return fromLine - toLine > 0;
         }
         // se peca for preta
-        if(fromPiece.getColor() == PieceColor.BLACK && fromLine - toLine < 0){
-            // direcao certa
-            return true;
+        else{
+            // se branca comeca por cima | valido se estar se movimentando para cima
+            if(PieceColor.isWhiteUp()) return fromLine - toLine > 0;
+            // se branca comeca por baixo | valido se estar se movimentando para baixo
+            else return fromLine - toLine < 0;
         }
-        // dicrecao errada
-        return false;
     }
 
     @Override

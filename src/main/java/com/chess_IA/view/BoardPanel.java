@@ -25,9 +25,8 @@ public class BoardPanel extends JPanel implements Runnable{
 
     Thread GAME_THREAD;
 
-    // cores dos jogadores
+    // cor do jogador
     private final PieceColor USER_COLOR;
-    private final PieceColor OPPONENT_COLOR;
 
     // controladores
     private final BoardController BOARD_CONTROLLER;
@@ -45,16 +44,9 @@ public class BoardPanel extends JPanel implements Runnable{
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
         this.USER_COLOR = userColor;
-        // seleciona cor da peca oponente de acordo com a peca do usuario
-        if(userColor == PieceColor.WHITE){
-            OPPONENT_COLOR = PieceColor.BLACK;
-        }
-        else{
-            OPPONENT_COLOR = PieceColor.WHITE;
-        }
 
         BOARD_CONTROLLER = new BoardController(true, userColor);
-        AI_CONTROLLER = new AIController(OPPONENT_COLOR, BOARD_CONTROLLER);
+        AI_CONTROLLER = new AIController(PieceColor.getOpponentOf(USER_COLOR), BOARD_CONTROLLER);
     }
 
     // funcao que inicia a thread
@@ -248,7 +240,7 @@ public class BoardPanel extends JPanel implements Runnable{
             System.out.println("Rei do usuario tomou xeque");
         }
         // verificando xeque no rei do oponente
-        if (BOARD_CONTROLLER.checkOnKing(OPPONENT_COLOR)){
+        if (BOARD_CONTROLLER.checkOnKing(PieceColor.getOpponentOf(USER_COLOR))){
             System.out.println("Rei do oponente tomou xeque");
         }
     }

@@ -15,10 +15,12 @@ public class Main {
         window.setTitle("Chass game");
 
         // definindo cor do usuario
-        final PieceColor USER_COLOR = PieceColor.WHITE;
+        final PieceColor USER_COLOR = PieceColor.BLACK;
+        PieceColor.setIsWhiteUp(true);
 
         // criando tela do tabuleiro
         BoardPanel boardPanel = new BoardPanel(USER_COLOR);
+
 
         // inserindo tela do tabuleiro na tela principal
         window.add(boardPanel);

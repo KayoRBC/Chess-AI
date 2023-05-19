@@ -31,9 +31,6 @@ public class BoardController {
     // cor da peca do usuario
     private final PieceColor USER_COLOR;
 
-    // cor da peca do oponente
-    private final PieceColor OPPONENT_COLOR;
-
     public BoardController(boolean isUserTurn, PieceColor USER_COLOR){
         board = new Board();
         this.isUserTurn = isUserTurn;
@@ -41,13 +38,6 @@ public class BoardController {
         this.isOpponentWon = false;
         this.isPawnChange = false;
         this.USER_COLOR = USER_COLOR;
-        // seleciona cor da peca oponente de acordo com a peca do usuario
-        if(USER_COLOR == PieceColor.WHITE){
-            OPPONENT_COLOR = PieceColor.BLACK;
-        }
-        else{
-            OPPONENT_COLOR = PieceColor.WHITE;
-        }
     }
 
     // movimentar uma peca de um lugar para o outro
@@ -64,7 +54,7 @@ public class BoardController {
                 if (fromPiece != null && toPiece != null) {
                     // se for turno do respectivo jogador
                     if ((isUser && isUserTurn && fromPiece.getColor() == USER_COLOR)
-                            || (!isUser && !isUserTurn && fromPiece.getColor() == OPPONENT_COLOR)) {
+                            || (!isUser && !isUserTurn && fromPiece.getColor() == PieceColor.getOpponentOf(USER_COLOR))) {
 
                         // se for movimento valido de acordo com a regra da peca origem
                         if (fromPiece.isValidMove(board, fromLine, fromColumn, toLine, toColumn)) {
@@ -105,6 +95,8 @@ public class BoardController {
         return false;
     }
 
+
+
     // aplica o movimento de castiling
     // return true caso conseguiu realizar
     // return false caso nao conseguiu realizar
@@ -143,39 +135,32 @@ public class BoardController {
         // movimento nao realizado
         return false;
     }
-
+    
     // troca o peao por uma nova peca escolhida caso algum peao tenha chegado no final do tabuleiro
     // return true caso deu certo
     // return false caos nao deu certo
     public boolean changePawnType(boolean isUser, PieceType type){
         // se poder trocar o tipo do peao e for do respectivo jogador
         if(isPawnChange){
-            // se usuario
-            if(isUser && isUserTurn){
-                int line = 0;
+            // se jogador certo
+            if((isUser && isUserTurn) || (!isUser && !isUserTurn)){
+                // pegando linha que vai procurar o peao
+                int line;
+                if(isUser) line = getLinePawnChangeOf(USER_COLOR);
+                else line = getLinePawnChangeOf(PieceColor.getOpponentOf(USER_COLOR));
+
+                // percorrendo colunas da linha
                 for(int column = 0; column < 8; column++){
+                    // pegando peca
                     Piece piece = board.getPiece(line, column);
-                    // se peao
+                    // se peca eh um peao
                     if(piece instanceof Pawn){
                         // inserindo nova peca selecionada no lugar do peao
                         board.setPiece(type, piece.getColor(), line, column, piece.hasMoved());
                         // troca realizada
                         isPawnChange = false;
-                        return true;
-                    }
-                }
-            }
-            // se oponente
-            else if(!isUser && !isUserTurn){
-                int line = 7;
-                for(int column = 0; column < 8; column++){
-                    Piece piece = board.getPiece(line, column);
-                    // se peao
-                    if(piece instanceof Pawn){
-                        // inserindo nova peca selecionada no lugar do peao
-                        board.setPiece(type, piece.getColor(), line, column, piece.hasMoved());
-                        // troca realizada
-                        isPawnChange = false;
+                        // trocando turno
+                        changeTurn();
                         return true;
                     }
                 }
@@ -184,44 +169,35 @@ public class BoardController {
         // troca nao realizada
         return false;
     }
-
+    
     // verifica se existe algum pao no final do tabuleiro
     // return true caso tenha
     // return false naso nao tenha
     private boolean verifyPawnOnFinal(){
-        for(int column = 0; column < 8; column++){
-            if(isPawnOnFinal(0, column) || isPawnOnFinal(7, column)) {
-                return true;
+        PieceColor[] colors = {USER_COLOR, PieceColor.getOpponentOf(USER_COLOR)};
+        for(PieceColor color : colors) {
+            int line = getLinePawnChangeOf(color);
+            for(int column = 0; column < 8; column++) {
+                Piece piece = board.getPiece(line, column);
+                if(piece instanceof Pawn){
+                    return true;
+                }
             }
         }
         return false;
     }
 
-    // verifica se eh um peao na posicoes dada e se esta localizada no final do tabuleiro
-    // return true caso esteja no final
-    // return false caso nao esteja no final
-    private boolean isPawnOnFinal(int line, int column){
-        // pegando peca
-        Piece piece = board.getPiece(line, column);
-        // se peca existir
-        if(piece != null){
-            // se a peca for um peao
-            if(piece instanceof Pawn){
-                PieceColor color = piece.getColor();
-                // se a peca for branca e na linha 0
-                if(color == PieceColor.WHITE && line == 0){
-                    // chegou no final
-                    return true;
-                }
-                // se a peca for preta e na linha 7
-                else if(color == PieceColor.WHITE && line == 7){
-                    // chegou no final
-                    return true;
-                }
-            }
+    private int getLinePawnChangeOf(PieceColor color){
+        int line;
+        if(PieceColor.isWhiteUp()){
+            if(color == PieceColor.WHITE) line = 7;
+            else line = 0;
         }
-        // nao chegou no final
-        return false;
+        else{
+            if(color == PieceColor.WHITE) line = 0;
+            else line = 7;
+        }
+        return line;
     }
 
     // troca o turno
@@ -237,7 +213,7 @@ public class BoardController {
             isOpponentWon = true;
         }
         // se o rei do oponente morreu
-        if(isKingDies(OPPONENT_COLOR)){
+        if(isKingDies(PieceColor.getOpponentOf(USER_COLOR))){
             // usuario venceu
             isUserWon = true;
         }

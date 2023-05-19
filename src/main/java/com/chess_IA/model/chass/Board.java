@@ -20,18 +20,32 @@ public class Board {
     private Piece[][] createInitialPieces(){
         Piece[][] pieces = new Piece[8][8];
 
+        PieceColor colorUp;
+        PieceColor colorDown;
+        if(PieceColor.isWhiteUp()){
+            colorUp = PieceColor.WHITE;
+            colorDown = PieceColor.BLACK;
+        }
+        else{
+            colorUp = PieceColor.BLACK;
+            colorDown = PieceColor.WHITE;
+        }
+
         // inserindo pecas brancas da fileira de tras
-        pieces[0] = createBackLine(PieceColor.BLACK);
+        pieces[0] = createBackLine(colorUp);
         // inserindo pecas brancas da frente
-        pieces[1] = createFrontLine(PieceColor.BLACK);
+        pieces[1] = createFrontLine(colorUp);
+
         // inserindo parte do tabuleiro vazias
         for(int i = 2; i < 6; i++){
             pieces[i] = createNullLine();
         }
         // inserindo pecas pretas da frente
-        pieces[6] = createFrontLine(PieceColor.WHITE);
+        pieces[6] = createFrontLine(colorDown);
         // inserindo peca pretas de traz
-        pieces[7] = createBackLine(PieceColor.WHITE);
+        pieces[7] = createBackLine(colorDown);
+
+
 
         // retornando tabuleiro
         return pieces;
