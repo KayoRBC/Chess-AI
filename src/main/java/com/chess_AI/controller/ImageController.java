@@ -1,7 +1,7 @@
 package com.chess_AI.controller;
 
 import com.chess_AI.util.PieceColor;
-import com.chess_AI.view.BoardPanel;
+import com.chess_AI.view.gameScreen.BoardPanel;
 import com.chess_AI.util.PieceType;
 
 import javax.imageio.ImageIO;
