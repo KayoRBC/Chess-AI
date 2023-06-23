@@ -1,4 +1,4 @@
-package com.chess_AI.view;
+package com.chess_AI.view.gameScreen;
 
 import com.chess_AI.controller.AIController;
 import com.chess_AI.controller.BoardController;
@@ -13,15 +13,8 @@ import java.util.Scanner;
 
 public class BoardPanel extends JComponent{
 
-    // SCREEN SETTINGS
-    private final int ORIGINAL_IMAGE_SIZE = 128; // 16x16 px
-    private final float SCALE = 1/1.5f; // aumenta o tamanho da imagem n vezes
-
-    private final int IMAGE_SIZE = Math.round(ORIGINAL_IMAGE_SIZE * SCALE); // tamanho da imagem que vai ser desenhada na tela
-    private final int MAX_SCREEN_COL = 8;
-    private final int MAX_SCREEN_ROW = 8;
-    private final int SCREEN_WIDTH = IMAGE_SIZE * MAX_SCREEN_COL; // largura da tela
-    private final int SCREEN_HEIGHT = IMAGE_SIZE * MAX_SCREEN_ROW; // altura da tela
+    // tamanho das imagens das pecas
+    private final int IMAGE_SIZE;
 
     // cor do jogador
     private final PieceColor USER_COLOR;
@@ -37,19 +30,28 @@ public class BoardPanel extends JComponent{
     private int toColumnButton = 0;
     private int select = 0;
 
-    public BoardPanel(PieceColor userColor, boolean isUserStart) {
-        this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
+    public BoardPanel(int screenWidth, int screenHeight, PieceColor userColor, int imageSize) {
+        IMAGE_SIZE = imageSize;
+
+        this.setPreferredSize(new Dimension(screenWidth, screenHeight));
         this.setBackground(Color.BLACK);
         this.setFocusable(true);
         this.USER_COLOR = userColor;
 
+        boolean isUserStart = false;
+        if(USER_COLOR == PieceColor.WHITE) isUserStart = true;
+
         BOARD_CONTROLLER = new BoardController(isUserStart, userColor);
         AI_CONTROLLER = new AIController(PieceColor.getOpponentOf(USER_COLOR), BOARD_CONTROLLER);
+    }
+
+    public void start(){
         addPiecesButtons();
         // se o jogador nao comecar
         if(!BOARD_CONTROLLER.isUserTurn()){
             AI_CONTROLLER.play();
         }
+        repaint();
     }
 
     // chamado pelo metodo repaint()
@@ -248,5 +250,4 @@ public class BoardPanel extends JComponent{
             System.out.println("Jogador venceu");
         }
     }
-
 }

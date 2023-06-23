@@ -1,4 +1,4 @@
-package com.chess_AI.view;
+package com.chess_AI.view.gameScreen;
 
 import javax.swing.*;
 import java.awt.*;
