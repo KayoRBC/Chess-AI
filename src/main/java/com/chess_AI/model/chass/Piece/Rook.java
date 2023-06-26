@@ -6,7 +6,16 @@ import com.chess_AI.util.PieceType;
 
 import java.util.stream.IntStream;
 
+/**
+ * Esta classe representa a peca da torre, possui as regras de movimentacao e o estado da peca.
+ */
 public class Rook extends Piece{
+
+    /**
+     * Cria e retorna uma torre de uma determinada cor
+     *
+     * @param color Cor da torre
+     */
     public Rook(PieceColor color) {
         super(color, PieceType.ROOK);
     }
@@ -23,7 +32,23 @@ public class Rook extends Piece{
         return (isCastlingMove(board, fromLine, fromColumn, toLine, toColumn));
     }
 
-    // verificando o movimento Roque
+    @Override
+    public Piece createClone() {
+        Piece clone = new Rook(getColor());
+        clone.setHasMoved(super.hasMoved());
+        return clone;
+    }
+
+    /**
+     * Verifica se eh movimento de castling
+     *
+     * @param board Tabuleiro para verificar
+     * @param fromLine Posicao linha de origem
+     * @param fromColumn Posicao coluna de origem
+     * @param toLine Posicao linha de destino
+     * @param toColumn Posicao coluna de destino
+     * @return Se eh movimento de castling
+     */
     public boolean isCastlingMove(Board board, int fromLine, int fromColumn, int toLine, int toColumn){
         // verificando se pecas existem e sao de cores iguais
         if(verifyPieces(board, true, fromLine, fromColumn, toLine, toColumn)){
@@ -47,6 +72,16 @@ public class Rook extends Piece{
         return false;
     }
 
+    /**
+     * Verifica se as posicoes de uma coluna ate outra de uma mesma linha sao seguras para uma determinada cor
+     *
+     * @param board Tabuleiro para verificar as posicoes
+     * @param line Linha para verificar
+     * @param fromColumn Coluna inicial
+     * @param toColumn Coluna final
+     * @param allyColor Cor para verificar se eh seguro
+     * @return Se as posicoes sao seguras
+     */
     private boolean isSafePositions(Board board, int line, int fromColumn, int toColumn, PieceColor allyColor){
         // verificando se fromColumn, toColumn e line então dentro de board
         if(valueInBoard(fromColumn) && valueInBoard(toColumn) && valueInBoard(line)) {
@@ -71,12 +106,5 @@ public class Rook extends Piece{
         }
         // posicoes perigoras
         return false;
-    }
-
-    @Override
-    public Piece createClone() {
-        Piece clone = new Rook(getColor());
-        clone.setHasMoved(super.hasMoved());
-        return clone;
     }
 }

@@ -4,7 +4,16 @@ import com.chess_AI.model.chass.Board;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
 
+/**
+ * Esta classe representa a peca da rainha, possui as regras de movimentacao e o estado da peca.
+ */
 public class Queen extends Piece{
+
+    /**
+     * Cria e retorna uma rainha de uma determinada cor
+     *
+     * @param color Cor da rainha
+     */
     public Queen(PieceColor color) {
         super(color, PieceType.QUEEN);
     }

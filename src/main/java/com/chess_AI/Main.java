@@ -57,7 +57,7 @@ public class Main {
         }
 
         // cria tela do tabuleiro
-        BoardPanel boardPanel = new BoardPanel(SCREEN_WIDTH, SCREEN_HEIGHT, USER_COLOR, IMAGE_SIZE);
+        BoardPanel boardPanel = new BoardPanel(SCREEN_WIDTH, USER_COLOR);
 
         // adiciona tela do tabuleiro na tela principal
         window.add(boardPanel);

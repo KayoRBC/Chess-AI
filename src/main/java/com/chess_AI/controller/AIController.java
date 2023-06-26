@@ -5,29 +5,39 @@ import com.chess_AI.model.ai.PositionsNode;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
 
+/**
+ * Esta classe representa o controller do model AI, ela contem as funcoes para manipulacao da IA.
+ */
 public class AIController {
 
-    // cor da peca da IA
+    /** Cor da peca da IA*/
     private final PieceColor AI_COLOR;
 
-    // tabuleiro que vai fazer as jogadas
+    /** Controller do tabuleiro que vai realizar as operacoes*/
     private final BoardController BOARD_CONTROLLER;
 
+    /**
+     * Cria objeto de AIController com informacoes de cor da peca da IA e do tabuleiro que vai realizar as operacoes.
+     *
+     * @param aIColor Cor da peca da IA
+     * @param boardController Controller do tabuleiro que vai realizar as operacoes
+     */
     public AIController(PieceColor aIColor, BoardController boardController){
         this.AI_COLOR = aIColor;
         this.BOARD_CONTROLLER = boardController;
     }
 
 
-    // funcao para a IA fazer a jogada
-    // return true caso de certo
-    // return false caso nao de certo
+    /**
+     * Faz a IA realizar uma jogada no tabuleiro.
+     *
+     * @return Se ela conseguir realizar a jogada
+     */
     public boolean play(){
-        // variavel que representa se a AI conseguiu mover a peca
-        boolean moved = false;
         // se for o turno da IA
         if(!BOARD_CONTROLLER.isUserTurn() && !BOARD_CONTROLLER.isUserWon() && !BOARD_CONTROLLER.isOpponentWon()) {
-            // calculando o melhor movimento com AlphaBeta
+
+            // calcula o melhor movimento com AlphaBeta
             PositionsNode bestMove = AlphaBeta.search(BOARD_CONTROLLER, 4, true, AI_COLOR);
 
             // posicoes do melhor movimento
@@ -43,11 +53,12 @@ public class AIController {
                 if(BOARD_CONTROLLER.isPawnChange() && !(BOARD_CONTROLLER.isUserTurn())){;
                     BOARD_CONTROLLER.changePawnType(true, PieceType.QUEEN);
                 }
-                moved = true;
+
+                // conseguiu realizar a jogada
+                return true;
             }
         }
-
-        // valido se conseguir mover a peca
-        return moved;
+        // nao conseguiu realizar a jogada
+        return false;
     }
 }

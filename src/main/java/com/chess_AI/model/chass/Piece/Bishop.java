@@ -4,7 +4,16 @@ import com.chess_AI.model.chass.Board;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
 
+/**
+ * Esta classe representa a peca do bispo, possui as regras de movimentacao e o estado da peca.
+ */
 public class Bishop extends Piece{
+
+    /**
+     * Cria e retorna um bispo de uma determinada cor
+     *
+     * @param color Cor do bispo
+     */
     public Bishop(PieceColor color) {
         super(color, PieceType.BISHOP);
     }

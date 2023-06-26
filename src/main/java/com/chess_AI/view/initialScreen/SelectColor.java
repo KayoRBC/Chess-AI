@@ -47,9 +47,6 @@ public class SelectColor extends JComponent {
 
         // texto
         JLabel description = new JLabel("Selecione a sua cor de peça");
-        // redimenciona texto
-        description.setPreferredSize(new Dimension(Math.round(width*(description.getText().length()*1.9f/100.0f)),
-                                                    Math.round(height * 0.20f)));
         // muda cor e fonte do texto
         description.setForeground(Color.WHITE);
         Font font = new Font(description.getFont().getName(), Font.PLAIN, Math.round(height * 0.20f));

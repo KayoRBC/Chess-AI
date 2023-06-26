@@ -4,22 +4,40 @@ import com.chess_AI.model.chass.Piece.*;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
 
+/**
+ * Esta classe armazena o tabuleiro de xadrez, possui funcoes para manipulacao direta do tabuleiro.
+ */
 public class Board {
 
-    // matrix board
+    /** Representa a posicao das pecas no tabuleiro*/
     private Piece[][] pieces;
 
+    /**
+     * Cria e retorna um tabuleiro de xadrez com o estado inicial do jogo.
+     */
     public Board() {
-        pieces = createInitialPieces();
+        pieces = createInitialState();
     }
 
+    /**
+     * Cria e retorna um tabuleiro de xadrez, entretanto com um estado.
+     *
+     * @param pieces
+     */
     private Board(Piece[][] pieces){
         this.pieces = pieces;
     }
 
-    private Piece[][] createInitialPieces(){
+    /**
+     * Cria e retorna uma matriz de pecas com as posicoes iniciais delas no tabuleiro
+     *
+     * @return Uma matriz de pecas
+     */
+    private Piece[][] createInitialState(){
+        // matriz que vai armazenar as pecas
         Piece[][] pieces = new Piece[8][8];
 
+        // pegando qual vai ser a cor que vai ser desenhada em cima e em baixo do tabuleiro
         PieceColor colorUp;
         PieceColor colorDown;
         if(PieceColor.isWhiteUp()){
@@ -31,48 +49,62 @@ public class Board {
             colorDown = PieceColor.WHITE;
         }
 
-        // inserindo pecas brancas da fileira de tras
+        // insere pecas iniciais na parte de cima do tabuleiro
         pieces[0] = createBackLine(colorUp);
-        // inserindo pecas brancas da frente
         pieces[1] = createFrontLine(colorUp);
 
-        // inserindo parte do tabuleiro vazias
+        // insere regiao intermediaria entre as duas cores
         for(int i = 2; i < 6; i++){
             pieces[i] = createNullLine();
         }
-        // inserindo pecas pretas da frente
+
+        // insere pecas iniciais na parte de baixo do tabuleiro
         pieces[6] = createFrontLine(colorDown);
-        // inserindo peca pretas de traz
         pieces[7] = createBackLine(colorDown);
 
-
-
-        // retornando tabuleiro
+        // retorna matriz de pecas
         return pieces;
     }
 
+    /**
+     * Cria e retorna uma linha do tabuleiro com pecas vazias
+     *
+     * @return Array de NullPiece
+     */
     private Piece[] createNullLine(){
-        // criando uma linha com pecas vazias
+        // cria uma linha com pecas vazias
         Piece[] nullLine = new Piece[8];
         for(int i = 0; i < nullLine.length; i++){
             nullLine[i] = new NullPiece();
         }
-        // retornando a linha
+        // retorna a linha
         return nullLine;
     }
 
+    /**
+     * Cria e retorna uma linha do tabuleiro com peoes de uma determinada cor
+     *
+     * @param color Cor do peao
+     * @return Array de Pawn
+     */
     private Piece[] createFrontLine(PieceColor color){
-        // criando uma linha de peoes
+        // cria uma linha de peoes
         Piece[] frontLine = new Piece[8];
         for(int i = 0; i < frontLine.length; i++){
             frontLine[i] = new Pawn(color);
         }
-        // retornando a linha
+        // retorna a linha
         return frontLine;
     }
 
+    /**
+     * Cria e retorna as pecas que estao atras dos peoes (front line) de uma determinada cor
+     *
+     * @param color Cor das pecas
+     * @return Array com as pecas que ficam atras dos peoes
+     */
     private Piece[] createBackLine(PieceColor color){
-        // criando linha de tras
+        // cria linha de tras
         Piece[] backLine = new Piece[8];
         backLine[0] = new Rook(color);
         backLine[1] = new Knight(color);
@@ -83,52 +115,78 @@ public class Board {
         backLine[6] = new Knight(color);
         backLine[7] = new Rook(color);
 
-        // retornando linha de tras
+        // retorna linha de tras
         return backLine;
     }
 
+    /**
+     * Troca a posicao de duas pecas do tabuleiro
+     *
+     * @param fromLine Posicao da linha da primeira peca
+     * @param fromColumn Posicao da coluna da primeira peca
+     * @param toLine Posicao da linha da segunda peca
+     * @param toColumn Posicao da coluna da segunda peca
+     */
     public void switchPieces(int fromLine, int fromColumn, int toLine, int toColumn){
-        // pegando pecas
+        // pega primeira peca
         Piece fromPiece = getPiece(fromLine, fromColumn);
+
+        // pega segunda peca
         Piece toPiece = getPiece(toLine, toColumn);
-        // se pecas existirem troca as pecas de posicao
+
+        // se pecas existirem
         if(fromPiece != null && toPiece != null) {
+
+            // troca posicoes
             pieces[toLine][toColumn] = fromPiece;
             pieces[fromLine][fromColumn] = toPiece;
         }
     }
 
+    /**
+     * Remove uma peca de uma determinada posicao do tabuleiro
+     *
+     * @param line Posicao da linha da peca
+     * @param column Posicao da coluna da peca
+     */
     public void removePiece(int line, int column){
-        // pegando peca
+        // pega peca da posicao que quer retirar
         Piece piece = getPiece(line, column);
-        // se peca existir troque por uma peca vazia
+
+        // se peca existe
         if(piece != null){
+            // substitui por uma peca vazia
             pieces[line][column] = new NullPiece();
         }
     }
 
+    /**
+     * Pega e retorna a peca de uma determinada posicao do tabuleiro
+     *
+     * @param line Posicao da linha da peca
+     * @param column Posicao da coluna da peca
+     * @return A peca que esta na posicao escolhida (se nao existir retorna null)
+     */
     public Piece getPiece(int line, int column){
         try{
-            // se peca existir retorna ela
+            // se peca existe retorna ela
             return pieces[line][column];
         } catch (Exception e) {
-            // se peca nao existir retorna null
+            // se peca nao existe retorna null
             return null;
         }
     }
 
-    public boolean setPiece(Piece piece, int line, int column, boolean hasMoved){
-        // se linha e coluna estiverem dentro do tabuleiro
-        if(-1 < line && line < 8 && -1 < column && column < 8){
-            pieces[line][column] = piece;
-            pieces[line][column].setHasMoved(hasMoved);
-            // inserido
-            return true;
-        }
-        // nao inserido
-        return false;
-    }
-
+    /**
+     * Insere uma nova peca de um determinado tipo e cor em uma posicao do tabuleiro.
+     *
+     * @param type Tipo da peca
+     * @param color Cor da peca
+     * @param line Posicao da linha para inserir
+     * @param column Posicao da coluna para inserir
+     * @param hasMoved Se foi movimentada alguma vez
+     * @return Se conseguiu inserir a peca
+     */
     public boolean setPiece(PieceType type, PieceColor color, int line, int column, boolean hasMoved){
         // se linha e coluna estiverem dentro do tabuleiro
         if(-1 < line && line < 8 && -1 < column && column < 8){
@@ -144,24 +202,37 @@ public class Board {
                     return false;
                 }
             }
-            // atualizando estado
+            // atualiza estado da peca
             piece.setHasMoved(hasMoved);
+
+            // insere peca no tabuleiro
             pieces[line][column] = piece;
-            // inserido
+
+            // conseguiu inserir
             return true;
         }
-        // nao inserido
+        // nao conseguiu inserir
         return false;
     }
 
+    /**
+     * Verifica se uma determinada posicao do tabuleiro eh perigosa para uma determinada cor
+     *
+     * @param allyColor Cor da peca para verificar se eh perigosa a posicao
+     * @param checkLine Posicao da linha para verificar
+     * @param checkColumn Posicao da coluna para verificar
+     * @return Se a posicao eh perigosa
+     */
     public boolean isDungerousPosition(PieceColor allyColor, int checkLine, int checkColumn){
-        // pegando cada posicao do tabuleiro
+        // percorre posicoes do tabuleiro
         for(int fromLine = 0; fromLine < 8; fromLine++){
             for(int fromColumn = 0; fromColumn < 8; fromColumn++){
-                Piece fromPiece = getPiece(fromLine, fromColumn);
+
+                // pega peca de uma determinada posicao
+                Piece currentPiece = getPiece(fromLine, fromColumn);
+
                 // se peca for inimiga
-                if(fromPiece.getColor() != allyColor){
-                    Piece currentPiece = getPiece(fromLine, fromColumn);
+                if(currentPiece.getColor() != allyColor){
                     // se peca inimiga pode ir para a posicao de verificacao
                     if(currentPiece.isValidMove(this, fromLine, fromColumn, checkLine, checkColumn)){
                         // posicao perigosa
@@ -173,39 +244,29 @@ public class Board {
         // posicao nao perigosa
         return false;
     }
-    public boolean isSafePosition(PieceColor allyColor, int checkLine, int checkColumn){
-        // pegando cada posicao do tabuleiro
-        for(int fromLine = 0; fromLine < 8; fromLine++){
-            for(int fromColumn = 0; fromColumn < 8; fromColumn++){
-                Piece fromPiece = getPiece(fromLine, fromColumn);
-                // se peca for aliada
-                if(fromPiece.getColor() == allyColor){
-                    // verificando se pode fazer o movimento
-                    Piece currentPiece = getPiece(0, 1);
-                    // se peca aliada pode ir para a posicao de verificacao
-                    if(currentPiece.isValidMove(this, fromLine, fromColumn, checkLine, checkColumn)){
-                        // posicao protegida
-                        return true;
-                    }
-                }
-            }
-        }
-        // posicao nao protegida
-        return false;
-    }
 
+    /**
+     * Cria e retorna um clone do tabuleiro atual
+     *
+     * @return Um clone do tabuleiro atual
+     */
     public Board createClone(){
+        // matriz que vai armazenar uma copia do estado atual do tabuleiro
         Piece[][] piecesClone = new Piece[8][8];
-        // percorrendo posicoes do tabuleiro
+
+        // percorre posicoes do tabuleiro
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
-                // pegando peca do tabuleiro original
+
+                // pega peca do tabuleiro original
                 Piece original = pieces[i][j];
-                // inserindo clone dessa peca no tabuleiro clone
+
+                // insere clone dessa peca na matriz clone
                 piecesClone[i][j] = original.createClone();
             }
         }
-        // retornando tabuleiro clone
+
+        // retorna tabuleiro clone
         return new Board(piecesClone);
     }
 }

@@ -4,16 +4,36 @@ import com.chess_AI.controller.BoardController;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
 
+/**
+ * Esta classe representa a estategia de busca AlphaBeta para um tabuleiro
+ */
 public abstract class AlphaBeta {
 
-    // inicia busca alpha beta
+    /**
+     * Busca e retorna a melhor movimento esperado de uma peca de acordo com o tabuleiro atual
+     *
+     * @param boardController  Tabuleiro atual para fazer a busca
+     * @param maxDepth Maxima profundidade de busca
+     * @param isMax Se quer procurar o movimento esperado que maximize seus ganhos
+     * @param allyColor Cor da peca da IA
+     * @return Posicoes de origem e destino para movimentar a peca
+     */
     public static PositionsNode search(BoardController boardController, int maxDepth, boolean isMax, PieceColor allyColor){
         PositionsNode root = new PositionsNode(-1, -1, -1, -1);
         return alphaBeta(root, boardController, 0, maxDepth, isMax, allyColor);
     }
 
-
-    // aplica alpha beta e retorna o node atual com o melhor valor e com a melhor posicao de movimentacao
+    /**
+     * Aplica busca AlphaBeta recursivo
+     *
+     * @param current Posicao atual
+     * @param board Tabuleiro atual
+     * @param depth Profundidade atual
+     * @param maxDepth Profundidade maxima
+     * @param isMax Se a profundidade atual busca maximizar os ganhos
+     * @param allyColor Cor da peca da IA
+     * @return Melhor movimento esperado
+     */
     private static PositionsNode alphaBeta(PositionsNode current, BoardController board, int depth, int maxDepth, boolean isMax, PieceColor allyColor){
         // se chegar na profundidade maxima
         if(depth >= maxDepth){
@@ -77,7 +97,12 @@ public abstract class AlphaBeta {
         return current;
     }
 
-    // tranfere o registro das posicoes de movimentacao de uma peca para a outra
+    /**
+     * Retroproga a movimentacao registrada de uma movimentacao registrada ate outra
+     *
+     * @param from Movimentacao para retropropagar
+     * @param to Movimentacao que vai receber a nova movimentacao
+     */
     private static void transferPositions(PositionsNode from, PositionsNode to){
         to.setFromLine(from.getFromLine());
         to.setFromColumn(from.getFromColumn());
@@ -85,7 +110,12 @@ public abstract class AlphaBeta {
         to.setToColumn(from.getToColumn());
     }
 
-    // pega o peso de uma peca
+    /**
+     * Pega o peso de uma peca de acordo com o tipo dela
+     *
+     * @param type Tipo da peca
+     * @return O peso da pesa
+     */
     private static double getWeight(PieceType type){
         return switch (type) {
             case PAWN -> 1;
@@ -97,12 +127,24 @@ public abstract class AlphaBeta {
         };
     }
 
-    // retorna a heuristica de um tabuleiro para uma determinada cor de peca
+    /**
+     * Calcula a heuristica de um estado do tabuleiro para uma determinada cor, quanto maior melhor
+     *
+     * @param state Tabuleiro atual
+     * @param allyColor Cor da peca para calcular a heuristica
+     * @return O valor do resultado da heuristica
+     */
     private static double heuristic(BoardController state, PieceColor allyColor){
         return calculateWeights(state, allyColor);
     }
 
-    // calculo de heuristica com base nos pesos das pecas e como elas impactam a cor selecionada
+    /**
+     * Calcula de heuristica com base nos pesos das pecas e como elas impactam a cor selecionada
+     *
+     * @param state Tabuleiro para calcular
+     * @param allyColor Cor da peca para calcular
+     * @return Valor da heuristica com base nos pesos.
+     */
     private static double calculateWeights(BoardController state, PieceColor allyColor) {
         // variavel que vai armazenar o resultado
         double sum = 0;

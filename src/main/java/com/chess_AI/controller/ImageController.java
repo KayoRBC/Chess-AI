@@ -9,20 +9,28 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * Esta classe representa um controller para carregar as imagens de src, possui funcoes para carregamento dessas imagens
+ */
 public abstract class ImageController {
 
-    // carrega e retorna uma matriz com as imagens de fundo
+    /**
+     * Carrega e retorna uma matriz de imagens que representa o fundo do tabuleiro de xadrez
+     *
+     * @return Uma matriz de imagens
+     */
     public static BufferedImage[][] loadBackground(){
         // matriz que vai armazenar as imagens de fundo
         BufferedImage[][] board = new BufferedImage[8][8];
 
         // variavel que representa se a posicao do fundo eh escura
         boolean isDark = false;
-        // pecorrendo posicoes do tabuleiro
+
+        // pecorre posicoes do tabuleiro
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
                 try {
-                    // pegando caminho de uma imagem de uma certa posicao do fundo
+                    // pega caminho de uma imagem de uma certa posicao do fundo
                     URL path;
                     // se escuro
                     if(isDark){
@@ -32,25 +40,35 @@ public abstract class ImageController {
                     else{
                         path = BoardPanel.class.getResource("/images/background/square_light_brown.png");
                     }
-                    // carregando imagem e inserindo na matriz
+
+                    // carrega imagem e insere na matriz
                     board[i][j] = ImageIO.read(path);
 
-                    // trocando tonalidade
+                    // troca tonalidade
                     isDark = !isDark;
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            // trocando tonalidade
+            // troca tonalidade
             isDark = !isDark;
         }
-        // retornando matriz com as imagens carregadas
+
+        // retorna matriz com as imagens carregadas
         return board;
     }
 
-    // carrega a imagem de uma peca selecionada por tipo e cor
+
+    /**
+     * Carrega e retorna a imagem de uma repectiva peca e cor
+     *
+     * @param type Tipo da peca
+     * @param pieceColor Cor da peca
+     * @return Imagem da peca (se for NullPiece entao retorna null)
+     */
     public static BufferedImage loadPiece(PieceType type, PieceColor pieceColor){
-        // convertendo a cor da peca em uma string
+        // converte a cor da peca em uma string
         String color;
         if(pieceColor == PieceColor.BLACK){
             color = "black";
@@ -59,7 +77,7 @@ public abstract class ImageController {
             color = "white";
         }
 
-        // selecionando imagem de acordo com o tipo da peca e a cor
+        // carrega imagem de acordo com o tipo da peca e a cor
         BufferedImage image = switch (type) {
             case ROOK -> loadPiece(color + "_rook");
             case KNIGHT -> loadPiece(color + "_knight");
@@ -70,17 +88,22 @@ public abstract class ImageController {
             default -> null;
         };
 
-        // retornando imagem
+        // retorna imagem
         return image;
     }
 
-    // retorna a imagem carregada do nome da peca com a cor
+    /**
+     * Carrega a imagem de uma peca de acordo com o nome do arquivo
+     *
+     * @param pieceNamePng Nome do arquivo que contem a imagem
+     * @return Imagem carregada (se nao existir entao retorna null)
+     */
     private static BufferedImage loadPiece(String pieceNamePng){
-        // pegando caminho da imagem
+        // pega caminho da imagem
         URL path;
         path = BoardPanel.class.getResource("/images/pieces/"+pieceNamePng+".png");
 
-        // carregando imagem
+        // carrega imagem
         BufferedImage image = null;
         try {
             image = ImageIO.read(path);
@@ -88,7 +111,7 @@ public abstract class ImageController {
             e.printStackTrace();
         }
 
-        // retornando imagem
+        // retorna imagem
         return image;
     }
 }

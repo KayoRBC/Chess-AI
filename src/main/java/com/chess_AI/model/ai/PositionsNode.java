@@ -1,15 +1,33 @@
 package com.chess_AI.model.ai;
 
+/**
+ * Esta classe representa a movimentacao de uma peca
+ */
 public class PositionsNode {
-    // posicoes da movimentacao realizada
+
+    /** Posicao da linha de origem*/
     private int fromLine;
+
+    /** Posicao da coluna de origem*/
     private int fromColumn;
+
+    /** Posicao da linha de destino*/
     private int toLine;
+
+    /** Posicao da coluna de destino*/
     private int toColumn;
 
-    // valor da heuristica
+    /** Valor da heuristica*/
     private double value;
 
+    /**
+     * Cria e retorna classe de uma movimentacao de uma peca
+     *
+     * @param fromLine Posicao da linha de origem
+     * @param fromColumn Posicao da coluna de origem
+     * @param toLine Posicao da linha de destino
+     * @param toColumn Posicao da
+     */
     public PositionsNode(int fromLine, int fromColumn, int toLine, int toColumn) {
         this.fromLine = fromLine;
         this.fromColumn = fromColumn;
