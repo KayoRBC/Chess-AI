@@ -1,13 +1,15 @@
-package com.chess_AI.model.chass;
+package com.chess_AI.model.chess;
 
-import com.chess_AI.model.chass.Piece.*;
+import com.chess_AI.model.chess.Piece.*;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
+import com.chess_AI.util.Util;
 
 /**
- * Esta classe armazena o tabuleiro de xadrez, possui funcoes para manipulacao direta do tabuleiro.
+ * Esta classe armazena o tabuleiro de xadrez, possui a matriz de pecas do tabuleiro
+ * e funcoes para manipulacao da mesma.
  */
-public class Board {
+public class Board implements Cloneable{
 
     /** Representa a posicao das pecas no tabuleiro*/
     private Piece[][] pieces;
@@ -20,16 +22,7 @@ public class Board {
     }
 
     /**
-     * Cria e retorna um tabuleiro de xadrez, entretanto com um estado.
-     *
-     * @param pieces
-     */
-    private Board(Piece[][] pieces){
-        this.pieces = pieces;
-    }
-
-    /**
-     * Cria e retorna uma matriz de pecas com as posicoes iniciais delas no tabuleiro
+     * Cria e retorna uma matriz de pecas com as posicoes iniciais delas no tabuleiro.
      *
      * @return Uma matriz de pecas
      */
@@ -67,7 +60,7 @@ public class Board {
     }
 
     /**
-     * Cria e retorna uma linha do tabuleiro com pecas vazias
+     * Cria e retorna uma linha do tabuleiro com pecas vazias.
      *
      * @return Array de NullPiece
      */
@@ -82,7 +75,7 @@ public class Board {
     }
 
     /**
-     * Cria e retorna uma linha do tabuleiro com peoes de uma determinada cor
+     * Cria e retorna uma linha do tabuleiro com peoes de uma determinada cor.
      *
      * @param color Cor do peao
      * @return Array de Pawn
@@ -98,7 +91,7 @@ public class Board {
     }
 
     /**
-     * Cria e retorna as pecas que estao atras dos peoes (front line) de uma determinada cor
+     * Cria e retorna as pecas que estao atras dos peoes (front line) de uma determinada cor.
      *
      * @param color Cor das pecas
      * @return Array com as pecas que ficam atras dos peoes
@@ -120,7 +113,7 @@ public class Board {
     }
 
     /**
-     * Troca a posicao de duas pecas do tabuleiro
+     * Troca a posicao de duas pecas do tabuleiro.
      *
      * @param fromLine Posicao da linha da primeira peca
      * @param fromColumn Posicao da coluna da primeira peca
@@ -144,7 +137,7 @@ public class Board {
     }
 
     /**
-     * Remove uma peca de uma determinada posicao do tabuleiro
+     * Remove uma peca de uma determinada posicao do tabuleiro.
      *
      * @param line Posicao da linha da peca
      * @param column Posicao da coluna da peca
@@ -161,7 +154,7 @@ public class Board {
     }
 
     /**
-     * Pega e retorna a peca de uma determinada posicao do tabuleiro
+     * Retorna a peca de uma determinada posicao do tabuleiro.
      *
      * @param line Posicao da linha da peca
      * @param column Posicao da coluna da peca
@@ -246,27 +239,58 @@ public class Board {
     }
 
     /**
-     * Cria e retorna um clone do tabuleiro atual
+     * Verifica se as posicoes de uma coluna a outra de uma mesma linha sao seguras para uma determinada cor.
+     * Posicoes que nao existem vao ser consideradas seguras.
      *
-     * @return Um clone do tabuleiro atual
+     * @param line Linha para verificar
+     * @param startColumn Coluna inicial da linha
+     * @param finalColumn Coluna final da linha
+     * @param allyColor Cor para verificar se eh seguro
+     * @return Se as posicoes sao seguras
      */
-    public Board createClone(){
-        // matriz que vai armazenar uma copia do estado atual do tabuleiro
-        Piece[][] piecesClone = new Piece[8][8];
+    public boolean isSafeLine(int line, int startColumn, int finalColumn, PieceColor allyColor){
 
-        // percorre posicoes do tabuleiro
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-
-                // pega peca do tabuleiro original
-                Piece original = pieces[i][j];
-
-                // insere clone dessa peca na matriz clone
-                piecesClone[i][j] = original.createClone();
-            }
+        // aumenta o intervalo de valores superior e inferior em +1,
+        // pois a funcao para pegar as colunas apenas retorna valores intermediarios
+        if(startColumn < finalColumn){
+            startColumn--;
+            finalColumn++;
+        }
+        else{
+            startColumn++;
+            finalColumn--;
         }
 
-        // retorna tabuleiro clone
-        return new Board(piecesClone);
+        int[] columns = Util.createIntermediateValues(startColumn, finalColumn);
+
+        if(columns != null){
+            for(int column: columns){
+
+                Piece piece = getPiece(line, column);
+
+                if(piece != null && isDungerousPosition(allyColor, line, column)) return false;
+            }
+        }
+        return true;
+    }
+
+
+    @Override
+    public Board clone() {
+        try {
+            Board clone = (Board) super.clone();
+
+            Piece[][] piecesClone = new Piece[8][8];
+            for(int i = 0; i < 8; i++){
+                for(int j = 0; j < 8; j++){
+                    piecesClone[i][j] = pieces[i][j].clone();
+                }
+            }
+            clone.pieces = piecesClone;
+
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

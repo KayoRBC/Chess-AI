@@ -169,7 +169,7 @@ public class BoardPanel extends JComponent{
             System.out.println("Usuaruio conseguiu mover");
 
             // se o peao do jogador chegou no final do tabuleiro
-            if(BOARD_CONTROLLER.isPawnChange() && BOARD_CONTROLLER.isUserTurn()){
+            if(BOARD_CONTROLLER.isHasPawnOnFinal() && BOARD_CONTROLLER.isUserTurn()){
 
                 // atualiza tela imediatamente
                 paintImmediately(getBounds());
@@ -248,11 +248,11 @@ public class BoardPanel extends JComponent{
      */
     private void verifyCheck(){
         // verificando se foi xeque no rei do usuario
-        if(BOARD_CONTROLLER.checkOnKing(USER_COLOR)){
+        if(BOARD_CONTROLLER.verifyCheckOnKing(USER_COLOR)){
             System.out.println("Rei do usuario tomou xeque");
         }
         // verificando xeque no rei da IA
-        if (BOARD_CONTROLLER.checkOnKing(PieceColor.getOpponentOf(USER_COLOR))){
+        if (BOARD_CONTROLLER.verifyCheckOnKing(PieceColor.getOpponentOf(USER_COLOR))){
             System.out.println("Rei da IA tomou xeque");
         }
     }
@@ -263,7 +263,7 @@ public class BoardPanel extends JComponent{
      */
     private void verifyWin(){
         // se a IA venceu
-        if(BOARD_CONTROLLER.isOpponentWon()){
+        if(BOARD_CONTROLLER.isAIWon()){
             System.out.println("IA venceu");
         }
         // se o usuario venceu

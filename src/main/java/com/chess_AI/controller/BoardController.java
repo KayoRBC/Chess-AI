@@ -1,20 +1,19 @@
 package com.chess_AI.controller;
 
-import com.chess_AI.model.backup.Backup;
-import com.chess_AI.model.chass.Board;
-import com.chess_AI.model.chass.Piece.*;
+import com.chess_AI.model.chess.Board;
+import com.chess_AI.model.chess.Piece.*;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
 
 import java.util.ArrayList;
 
 /**
- * Esta classe representa o controller do model chass, ela contem as operacores de manipulacao de uma tabuleiro de xadrez.
+ * Esta classe representa o controller do model chess, ela contem as operacores de manipulacao de uma tabuleiro de xadrez.
  */
-public class BoardController {
+public class BoardController implements Cloneable{
 
     /** Armazena os estados dos tabuleiros anteriores*/
-    private ArrayList<Backup> backups = new ArrayList<>();
+    private ArrayList<BoardController> backups = new ArrayList<>();
 
     /** Tabuleiro que armazena as pecas*/
     private Board board;
@@ -22,30 +21,30 @@ public class BoardController {
     /** Se eh o turno do usuario*/
     private boolean isUserTurn;
 
-    /** Se o oponente ganhou*/
-    private boolean isOpponentWon;
+    /** Se a IA ganhou ganhou*/
+    private boolean isAIWon;
 
     /** Se o jogador ganhou*/
     private boolean isUserWon;
 
-    /** Se algum peao chegou no final do tabuleiro e precisa selecionar a troca de peca*/
-    private boolean isPawnChange;
+    /** Se algum peao precisa mudar o tipo pois chegou no final do tabuleiro*/
+    private boolean hasPawnOnFinal;
 
-    /** Cor da peca do jogador*/
+    /** Cor da peca do usuario*/
     private final PieceColor USER_COLOR;
 
     /**
      * Cria objeto de BoardController.
      *
-     * @param isUserTurn Se o usuario vai comecar
+     * @param isUserStarts Se o usuario que vai comecar
      * @param USER_COLOR Cor da peca do usuario
      */
-    public BoardController(boolean isUserTurn, PieceColor USER_COLOR){
+    public BoardController(boolean isUserStarts, PieceColor USER_COLOR){
         board = new Board();
-        this.isUserTurn = isUserTurn;
+        this.isUserTurn = isUserStarts;
         this.isUserWon = false;
-        this.isOpponentWon = false;
-        this.isPawnChange = false;
+        this.isAIWon = false;
+        this.hasPawnOnFinal = false;
         this.USER_COLOR = USER_COLOR;
     }
 
@@ -60,151 +59,113 @@ public class BoardController {
      * @return Se deu certo movimentar a peca
      */
     public boolean move(boolean isUser, int fromLine, int fromColumn, int toLine, int toColumn){
-        // se nao for hora de trocar o tipo do peao quando ele chega no final do tabuleiro
-        if(!isPawnChange) {
-            // se nenhum jogador venceu ainda
-            if (!isUserWon && !isOpponentWon) {
+        if(!(isUserWon && isAIWon && hasPawnOnFinal)){
+            Piece fromPiece = board.getPiece(fromLine, fromColumn);
 
-                // pega peca da posicao origem
-                Piece fromPiece = board.getPiece(fromLine, fromColumn);
+            boolean isUserMove = isUser && isUserTurn
+                                && fromPiece.getColor() == USER_COLOR;
 
-                // pega peca da posicao destino
-                Piece toPiece = board.getPiece(toLine, toColumn);
+            boolean isAIMove = !isUser && !isUserTurn
+                                && fromPiece.getColor() == PieceColor.getOpponentOf(USER_COLOR);
 
-                // se pecas existirem
-                if (fromPiece != null && toPiece != null) {
+            if((isUserMove || isAIMove)) {
 
-                    if ((isUser && isUserTurn && fromPiece.getColor() == USER_COLOR) // se for usuario
-                       || (!isUser && !isUserTurn && fromPiece.getColor() == PieceColor.getOpponentOf(USER_COLOR))) // se for oponente
-                        {
+                if(applyCastling(fromLine, fromColumn, toLine, toColumn)) return true;
 
-                        // se for movimento valido de acordo com a regra da peca origem
-                        if (fromPiece.isValidMove(board, fromLine, fromColumn, toLine, toColumn)) {
+                else if(fromPiece.isValidMove(board, fromLine, fromColumn, toLine, toColumn)){
+                    addBackup();
 
-                            // cria backup do tabuleiro atual antes do movimento
-                            addBackup();
-
-                            // se nao foi possivel aplicar o Roque
-                            if (!applyCastling(fromLine, fromColumn, toLine, toColumn)) {
-                                // muda estado da peca para movida
-                                fromPiece.setHasMoved(true);
-                                // remove peca da posicao destino
-                                board.removePiece(toLine, toColumn);
-                                // troca posicoes de origem e destino
-                                board.switchPieces(fromLine, fromColumn, toLine, toColumn);
-                            }
-
-                            // verifica vitoria
-                            winCondition();
-
-                            // verifica se algum peao chegou no final
-                            if (verifyPawnOnFinal()) {
-                                isPawnChange = true;
-                            }
-                            else{
-                                // troca turno
-                                changeTurn();
-                            }
-
-                            // movimentacao realizada
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
-        // movimentacao nao realizada
-        return false;
-    }
-
-
-    /**
-     * Tenta aplicar o movimento de castling (movimento do rei com a torre).
-     *
-     * @param fromLine Posicao da linha de origem
-     * @param fromColumn Posicao da coluna de origem
-     * @param toLine Posicao da linha de destino
-     * @param toColumn Posicao da coluna de destino
-     * @return Se deu certo
-     */
-    private boolean applyCastling(int fromLine, int fromColumn, int toLine, int toColumn){
-        // pega peca da posicao de origem
-        Piece fromPiece = board.getPiece(fromLine, fromColumn);
-
-        // pega peca da posicao de destino
-        Piece toPiece = board.getPiece(toLine, toColumn);
-
-        // se as pecas existirem
-        if(fromPiece != null && toPiece != null) {
-
-            // se peca de origem for uma torre
-            if (fromPiece instanceof Rook rook) {
-
-                // se for possivel fazer o Roque
-                if (rook.isCastlingMove(board, fromLine, fromColumn, toLine, toColumn)) {
-                    // se para esquerda
-                    if (fromColumn < toColumn) {
-                        // move rei
-                        board.switchPieces(toLine, toColumn, toLine, toColumn - 2);
-                        // move torre
-                        board.switchPieces(fromLine, fromColumn, fromLine, fromColumn + 3);
-                    }
-                    // para direita
-                    else {
-                        // move rei
-                        board.switchPieces(toLine, toColumn, toLine, toColumn + 2);
-                        // move torre
-                        board.switchPieces(fromLine, fromColumn, fromLine, fromColumn - 2);
-                    }
-
-                    // atualiza estados das pecas
                     fromPiece.setHasMoved(true);
-                    toPiece.setHasMoved(true);
+                    board.removePiece(toLine, toColumn);
+                    board.switchPieces(fromLine, fromColumn, toLine, toColumn);
 
-                    // movimento realizado
+                    verifyWin();
+
+                    verifyPawnOnFinal();
+
+                    if(!hasPawnOnFinal) changeTurn();
+
                     return true;
                 }
             }
         }
-        // movimento nao realizado
         return false;
     }
 
     /**
-     * Troca a pecao do peao que chegou no final do tabuleiro.
+     * Verifica e aplica caso possivel o movimento de castling
+     *
+     * @param fromLine Posicao da linha de inicio
+     * @param fromColumn Posicao da coluna de inicio
+     * @param toLine Posicao da linha de "destino"
+     * @param toColumn Posicao da coluna de "destino"
+     * @return Se aplicou o castling
+     */
+    private boolean applyCastling(int fromLine, int fromColumn, int toLine, int toColumn) {
+        Piece fromPiece = board.getPiece(fromLine, fromColumn);
+
+        if(fromPiece != null && fromPiece.isCastlingMove(board, fromLine, fromColumn, toLine, toColumn)) {
+            addBackup();
+
+            int horizontalDistance = fromColumn - toColumn;
+
+            if (fromPiece instanceof King) {
+                boolean isRight = horizontalDistance < 0;
+                if (isRight) {
+                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn + 2);
+                    board.switchPieces(toLine, toColumn, toLine, toColumn - 2);
+                } else {
+                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn - 2);
+                    board.switchPieces(toLine, toColumn, toLine, toColumn + 3);
+                }
+
+            }
+            else{ //if (fromPiece instanceof Rook)
+                boolean isRight = horizontalDistance > 0;
+                if (isRight) {
+                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn - 2);
+                    board.switchPieces(toLine, toColumn, toLine, toColumn + 2);
+                } else {
+                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn + 3);
+                    board.switchPieces(toLine, toColumn, toLine, toColumn - 2);
+                }
+            }
+
+            Piece toPiece = board.getPiece(toLine, toColumn);
+            fromPiece.setHasMoved(true);
+            toPiece.setHasMoved(true);
+
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Troca o peao que chegou no final do tabuleiro por um novo tipo de peca.
      *
      * @param isUser Se eh o usuario
-     * @param type Tipo da peca para colocar no lugar do peao
+     * @param newType Tipo da peca para colocar no lugar do peao
      * @return Se a troca foi realizada
      */
-    public boolean changePawnType(boolean isUser, PieceType type){
-        // se aguardando troca do peao
-        if(isPawnChange){
-            // se jogador certo que esta realizando a troca
-            if((isUser && isUserTurn) || (!isUser && !isUserTurn)){
+    public boolean changePawnType(boolean isUser, PieceType newType){
+        if(hasPawnOnFinal && (isUser && isUserTurn) || (!isUser && !isUserTurn)){
+            // pega posicao da linha que vai procurar o peao
+            int line;
+            if(isUser) line = getFinalLineOf(USER_COLOR);
+            else line = getFinalLineOf(PieceColor.getOpponentOf(USER_COLOR));
 
-                // pega posicao da linha que vai procurar o peao
-                int line;
-                if(isUser) line = getFinalLineOf(USER_COLOR);
-                else line = getFinalLineOf(PieceColor.getOpponentOf(USER_COLOR));
+            for(int column = 0; column < 8; column++){
+                Piece pieceOnFinal = board.getPiece(line, column);
 
-                // percorre colunas da linha de procura
-                for(int column = 0; column < 8; column++){
-                    // pega peca da linha procurada
-                    Piece piece = board.getPiece(line, column);
+                if(pieceOnFinal instanceof Pawn){
+                    // insere nova peca selecionada no lugar do peao
+                    board.setPiece(newType, pieceOnFinal.getColor(), line, column, pieceOnFinal.hasMoved());
 
-                    // se peca eh um peao
-                    if(piece instanceof Pawn){
-                        // insere nova peca selecionada no lugar do peao
-                        board.setPiece(type, piece.getColor(), line, column, piece.hasMoved());
-                        // troca realizada
-                        isPawnChange = false;
-                        // trocando turno
-                        changeTurn();
+                    hasPawnOnFinal = false;
+                    changeTurn();
 
-                        // troca realizada
-                        return true;
-                    }
+                    // troca realizada
+                    return true;
                 }
             }
         }
@@ -213,11 +174,9 @@ public class BoardController {
     }
 
     /**
-     * Verifica se algum peao chegou no final do tabuleiro.
-     *
-     * @return Se algum peao chegou no final do tabuleiro
+     * Verifica se algum peao chegou no final do tabuleiro e atualiza variavel hasPawnOnFinal.
      */
-    private boolean verifyPawnOnFinal(){
+    private void verifyPawnOnFinal(){
         // cores dos pacas do tabuleiro
         PieceColor[] colors = {USER_COLOR, PieceColor.getOpponentOf(USER_COLOR)};
 
@@ -234,13 +193,11 @@ public class BoardController {
                 Piece piece = board.getPiece(line, column);
                 if(piece instanceof Pawn){
                     // precisa trocar o tipo
-                    return true;
+                    hasPawnOnFinal = true;
+                    return;
                 }
             }
         }
-
-        // nao precisa trocar o tipo
-        return false;
     }
 
     /**
@@ -272,11 +229,11 @@ public class BoardController {
     /**
      * Verifica se alguem venceu e atualiza as variaveis isOpponentWon e isUserWon.
      */
-    private void winCondition(){
+    private void verifyWin(){
         // se o rei do usuario morreu
         if(isKingDies(USER_COLOR)){
             // oponente venceu
-            isOpponentWon = true;
+            isAIWon = true;
         }
         // se o rei do oponente morreu
         if(isKingDies(PieceColor.getOpponentOf(USER_COLOR))){
@@ -314,7 +271,7 @@ public class BoardController {
      * @param color Cor do rei
      * @return Se esta em check
      */
-    public boolean checkOnKing(PieceColor color){
+    public boolean verifyCheckOnKing(PieceColor color){
         // pecorrendo possicoes do tabuleiro
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
@@ -335,17 +292,17 @@ public class BoardController {
 
     /**
      * Adiciona um backup do tabuleiro atual na lista de backups.
+     * Entretanto nao eh realizada a copia da lista de backups.
      */
     private void addBackup(){
-        // crian backup
-        Backup newBackup = new Backup(board, isUserTurn, isOpponentWon, isUserWon, isPawnChange);
-        // adiciona backup a lista de backups
-        backups.add(newBackup);
+        BoardController backup = clone();
+        backups.add(backup);
     }
 
 
     /**
      * Retorna o tabuleiro atual para o ultimo backup salvo.
+     * Alem disso remove da lista de backups do ultimo salvo.
      *
      * @return Se deu certo retornar
      */
@@ -353,15 +310,13 @@ public class BoardController {
         // se existir backups anteriores
         if(backups.size() > 0){
 
-            // pega ultimo backup salvo
-            Backup last = backups.get(backups.size()-1);
+            BoardController last = backups.get(backups.size()-1);
 
-            // volta estado do tabuleiro
-            this.board = last.getBoard();
-            this.isUserTurn = last.isUserTurn();
-            this.isOpponentWon = last.isOpponentWon();
-            this.isUserWon = last.isUserWon();
-            this.isPawnChange = last.isPawnChange();
+            this.board = last.board;
+            this.isUserTurn = last.isUserTurn;
+            this.isAIWon = last.isAIWon;
+            this.isUserWon = last.isUserWon;
+            this.hasPawnOnFinal = last.hasPawnOnFinal;
 
             // deleta ultimo backup da lista de backups
             backups.remove(last);
@@ -412,8 +367,8 @@ public class BoardController {
      *
      * @return Se o oponente venceu
      */
-    public boolean isOpponentWon() {
-        return isOpponentWon;
+    public boolean isAIWon() {
+        return isAIWon;
     }
 
     /**
@@ -430,7 +385,19 @@ public class BoardController {
      *
      * @return Se alguem precisa trocar o tipo do peao
      */
-    public boolean isPawnChange() {
-        return isPawnChange;
+    public boolean isHasPawnOnFinal() {
+        return hasPawnOnFinal;
+    }
+
+    @Override
+    public BoardController clone() {
+        try {
+            BoardController clone = (BoardController) super.clone();
+            clone.board = board.clone();
+
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

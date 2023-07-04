@@ -35,7 +35,7 @@ public class AIController {
      */
     public boolean play(){
         // se for o turno da IA
-        if(!BOARD_CONTROLLER.isUserTurn() && !BOARD_CONTROLLER.isUserWon() && !BOARD_CONTROLLER.isOpponentWon()) {
+        if(!BOARD_CONTROLLER.isUserTurn() && !BOARD_CONTROLLER.isUserWon() && !BOARD_CONTROLLER.isAIWon()) {
 
             // calcula o melhor movimento com AlphaBeta
             PositionsNode bestMove = AlphaBeta.search(BOARD_CONTROLLER, 4, true, AI_COLOR);
@@ -50,7 +50,7 @@ public class AIController {
             if(BOARD_CONTROLLER.move(false, fromLine, fromColumn, toLine, toColumn)){
 
                 // se for for troca de peao
-                if(BOARD_CONTROLLER.isPawnChange() && !(BOARD_CONTROLLER.isUserTurn())){;
+                if(BOARD_CONTROLLER.isHasPawnOnFinal() && !(BOARD_CONTROLLER.isUserTurn())){;
                     BOARD_CONTROLLER.changePawnType(true, PieceType.QUEEN);
                 }
 
