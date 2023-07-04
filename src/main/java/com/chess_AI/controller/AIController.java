@@ -50,7 +50,7 @@ public class AIController {
             if(BOARD_CONTROLLER.move(false, fromLine, fromColumn, toLine, toColumn)){
 
                 // se for for troca de peao
-                if(BOARD_CONTROLLER.isHasPawnOnFinal() && !(BOARD_CONTROLLER.isUserTurn())){;
+                if(BOARD_CONTROLLER.hasPawnOnFinal() && !(BOARD_CONTROLLER.isUserTurn())){;
                     BOARD_CONTROLLER.changePawnType(true, PieceType.QUEEN);
                 }
 

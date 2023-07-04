@@ -27,9 +27,6 @@ public class BoardController implements Cloneable{
     /** Se o jogador ganhou*/
     private boolean isUserWon;
 
-    /** Se algum peao precisa mudar o tipo pois chegou no final do tabuleiro*/
-    private boolean hasPawnOnFinal;
-
     /** Cor da peca do usuario*/
     private final PieceColor USER_COLOR;
 
@@ -44,7 +41,6 @@ public class BoardController implements Cloneable{
         this.isUserTurn = isUserStarts;
         this.isUserWon = false;
         this.isAIWon = false;
-        this.hasPawnOnFinal = false;
         this.USER_COLOR = USER_COLOR;
     }
 
@@ -59,7 +55,7 @@ public class BoardController implements Cloneable{
      * @return Se deu certo movimentar a peca
      */
     public boolean move(boolean isUser, int fromLine, int fromColumn, int toLine, int toColumn){
-        if(!(isUserWon && isAIWon && hasPawnOnFinal)){
+        if(!(isUserWon && isAIWon && hasPawnOnFinal())){
             Piece fromPiece = board.getPiece(fromLine, fromColumn);
 
             boolean isUserMove = isUser && isUserTurn
@@ -81,9 +77,7 @@ public class BoardController implements Cloneable{
 
                     verifyWin();
 
-                    verifyPawnOnFinal();
-
-                    if(!hasPawnOnFinal) changeTurn();
+                    if(!hasPawnOnFinal()) changeTurn();
 
                     return true;
                 }
@@ -148,7 +142,7 @@ public class BoardController implements Cloneable{
      * @return Se a troca foi realizada
      */
     public boolean changePawnType(boolean isUser, PieceType newType){
-        if(hasPawnOnFinal && (isUser && isUserTurn) || (!isUser && !isUserTurn)){
+        if(hasPawnOnFinal() && (isUser && isUserTurn) || (!isUser && !isUserTurn)){
             // pega posicao da linha que vai procurar o peao
             int line;
             if(isUser) line = getFinalLineOf(USER_COLOR);
@@ -161,7 +155,6 @@ public class BoardController implements Cloneable{
                     // insere nova peca selecionada no lugar do peao
                     board.setPiece(newType, pieceOnFinal.getColor(), line, column, pieceOnFinal.hasMoved());
 
-                    hasPawnOnFinal = false;
                     changeTurn();
 
                     // troca realizada
@@ -174,30 +167,23 @@ public class BoardController implements Cloneable{
     }
 
     /**
-     * Verifica se algum peao chegou no final do tabuleiro e atualiza variavel hasPawnOnFinal.
+     * Verifica se algum peao chegou no final do tabuleiro.
+     *
+     * @return Se algum peao chegou no final do tabuleiro.
      */
-    private void verifyPawnOnFinal(){
-        // cores dos pacas do tabuleiro
+    public boolean hasPawnOnFinal(){
         PieceColor[] colors = {USER_COLOR, PieceColor.getOpponentOf(USER_COLOR)};
 
-        // percorre cores
         for(PieceColor color : colors) {
-
-            // pega linha final da cor
             int line = getFinalLineOf(color);
-
-            // para cada coluna da linha final
             for(int column = 0; column < 8; column++) {
 
-                // se peca for um peao
                 Piece piece = board.getPiece(line, column);
                 if(piece instanceof Pawn){
-                    // precisa trocar o tipo
-                    hasPawnOnFinal = true;
-                    return;
+                    return true;
                 }
             }
-        }
+        }return false;
     }
 
     /**
@@ -316,7 +302,6 @@ public class BoardController implements Cloneable{
             this.isUserTurn = last.isUserTurn;
             this.isAIWon = last.isAIWon;
             this.isUserWon = last.isUserWon;
-            this.hasPawnOnFinal = last.hasPawnOnFinal;
 
             // deleta ultimo backup da lista de backups
             backups.remove(last);
@@ -378,15 +363,6 @@ public class BoardController implements Cloneable{
      */
     public boolean isUserWon() {
         return isUserWon;
-    }
-
-    /**
-     * Retorna se alguem precisa trocar o tipo de algum peao que chegou no final do tabuleiro.
-     *
-     * @return Se alguem precisa trocar o tipo do peao
-     */
-    public boolean isHasPawnOnFinal() {
-        return hasPawnOnFinal;
     }
 
     @Override

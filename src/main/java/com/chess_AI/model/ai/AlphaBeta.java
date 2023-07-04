@@ -61,7 +61,7 @@ public abstract class AlphaBeta {
                             // se conseguir fazer movimento de fromPiece para toPiece
                             if(board.move(board.isUserTurn(), fromLine, fromColumn, toLine, toColumn)){
                                 // se for for troca de peao
-                                if(board.isHasPawnOnFinal()){;
+                                if(board.hasPawnOnFinal()){;
                                     board.changePawnType(board.isUserTurn(), PieceType.QUEEN);
                                 }
 

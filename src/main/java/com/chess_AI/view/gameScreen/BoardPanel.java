@@ -169,7 +169,7 @@ public class BoardPanel extends JComponent{
             System.out.println("Usuaruio conseguiu mover");
 
             // se o peao do jogador chegou no final do tabuleiro
-            if(BOARD_CONTROLLER.isHasPawnOnFinal() && BOARD_CONTROLLER.isUserTurn()){
+            if(BOARD_CONTROLLER.hasPawnOnFinal() && BOARD_CONTROLLER.isUserTurn()){
 
                 // atualiza tela imediatamente
                 paintImmediately(getBounds());
