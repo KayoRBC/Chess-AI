@@ -59,14 +59,14 @@ public class InitialScreen extends JComponent {
      */
     private void addErrorText(int width, int height){
         // adiciona texto inicial
-        errorText = new JLabel("");
+        errorText = new JLabel(" ");
 
         // redimenciona espaco para o texto
-        errorText.setPreferredSize(new Dimension(width, height));
+        //errorText.setPreferredSize(new Dimension(width, height));
 
         // muda cor e fonte do texto
         errorText.setForeground(Color.RED);
-        Font font = new Font(errorText.getFont().getName(), Font.BOLD, Math.round(height * 0.35f));
+        Font font = new Font(errorText.getFont().getName(), Font.BOLD, Math.round(height * 0.50f));
         errorText.setFont(font);
 
         // adiciona painel de erro na tela inicial
@@ -101,7 +101,6 @@ public class InitialScreen extends JComponent {
                 // se alguma cor foi selecionada
                 if(SELECT_COLOR.getSelectedColor() != null) {
                     // comecar jogo
-                    System.out.println(SELECT_COLOR.getSelectedColor());
                     start = true;
                 }
                 // se nenhuma cor selecionada

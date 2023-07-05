@@ -10,8 +10,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
-import java.util.Scanner;
 
 /**
  * Esta classe representa o tabuleiro de xadrez visualmente
@@ -56,7 +57,6 @@ public class BoardPanel extends JComponent{
 
         // redimenciona tela
         this.setPreferredSize(new Dimension(screenSize, screenSize));
-        //this.setFocusable(true);
 
         // define cor de fundo da tela
         this.setBackground(Color.BLACK);
@@ -71,31 +71,50 @@ public class BoardPanel extends JComponent{
 
         // cria objeto de AIController
         AI_CONTROLLER = new AIController(PieceColor.getOpponentOf(USER_COLOR), BOARD_CONTROLLER);
+
+        setVisible(false);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                System.out.println("Comecando jogo!");
+                if(e.getComponent() instanceof BoardPanel board){
+                    board.start();
+                }
+            }
+        });
+        setVisible(true);
     }
 
 
     /**
-     * Habilita o jogador selecionar as pecas para movimentar e faz IA jogar caso ela que comece o jogo.
+     * Retorna o boardController utilizado.
+     *
+     * @return O boardController utilizado
      */
-    public void start(){
-        // adiciona os botoes para selecionar as pecas
-        addPiecesButtons();
+    public BoardController getBoardController() {
+        return BOARD_CONTROLLER;
+    }
 
-        // se o jogador nao comecar
-        if(!BOARD_CONTROLLER.isUserTurn()){
-            // IA faz jogada
-            AI_CONTROLLER.play();
+
+    /**
+     * Verifica check e mostra no terminal qual rei esta em check.
+     */
+    public void verifyCheck(){
+        // verificando se foi xeque no rei do usuario
+        if(BOARD_CONTROLLER.verifyCheckOnKing(USER_COLOR)){
+            System.out.println("Rei do usuario tomou xeque");
         }
-
-        // atualiza tela
-        repaint();
+        // verificando xeque no rei da IA
+        if (BOARD_CONTROLLER.verifyCheckOnKing(PieceColor.getOpponentOf(USER_COLOR))){
+            System.out.println("Rei da IA tomou xeque");
+        }
     }
 
 
     /**
      * Atualiza a primeira e a segunda posicao selecionada pelo usuario, sendo a primeira chamada para
      * a primeira posicao, segunda chamada para a segunda posicao. Apos isso reseta as posicoes selecionadas
-     * e a IA faz jogada.
+     * e chama o metodo userPlay().
      *
      * @param line Posicao da linha
      * @param column Posicao da coluna
@@ -116,7 +135,7 @@ public class BoardPanel extends JComponent{
                 toColumnButton = column;
 
                 // faz jogada da jogador e da IA
-                play();
+                userPlay();
 
                 // reseta posicoes selecionadas
                 fromLineButton = -1;
@@ -131,130 +150,84 @@ public class BoardPanel extends JComponent{
 
 
     /**
-     * Faz jogado do jogador de acordo com as posicoes selecionadas. Apos isso realiza
-     * a jogada a IA. Conforme as jogadas sao feitas vai atualizando a tela.
+     * Faz jogada da IA e chama o metodo addPiecesButtons().
+     * Alem disso, atualiza a tela, remove todos os componentes anteriores
+     * e mostra check/vitoria no terminal.
      */
-    private void play(){
-        System.out.println("Usuario tentanto mover:");
-        System.out.println("From line: " + fromLineButton + " Column: " + fromColumnButton + " | To line: " + toLineButton + " Column: " + toColumnButton);
-        // jogador tenta fazer jogada
-        userPlay();
-
-        // atualiza botoes
-        addPiecesButtons();
-
-        // atualiza tela imediatamente
-        paintImmediately(getBounds());
-
-        // AI tenta fazer jogada
-        AIPlay();
-
-        // atualiza tela
-        repaint();
-
-        // verifica vitoria
-        verifyWin();
-    }
-
-
-    /**
-     * Faz jogada do jogador de acordo com as posicoes selecionadas
-     *
-     * @return Se deu certo a jogada
-     */
-    private boolean userPlay(){
-        // faz jogada do usuario e caso de certo
-        if(BOARD_CONTROLLER.move(true, fromLineButton, fromColumnButton, toLineButton, toColumnButton)){
-
-            System.out.println("Usuaruio conseguiu mover");
-
-            // se o peao do jogador chegou no final do tabuleiro
-            if(BOARD_CONTROLLER.hasPawnOnFinal() && BOARD_CONTROLLER.isUserTurn()){
-
-                // atualiza tela imediatamente
-                paintImmediately(getBounds());
-
-                // seleciona tipo para troca do peao por nova peca
-                PieceType type = selectPieceType();
-
-                // troca peao por nova peca
-                BOARD_CONTROLLER.changePawnType(true, type);
-            }
-
-            // verifica check
-            verifyCheck();
-
-            return true;
-        }
-        // nao deu certo movimentar
-        else{
-            System.out.println("Usuario nao conseguiu mover");
-            return false;
-        }
-    }
-
-
-    /**
-     * Pede ao usuario selecionar um tipo de peca e retorna ela.
-     *
-     * @return Tipo da peca selecionada
-     */
-    private PieceType selectPieceType(){
-        // opcoes de pecas
-        PieceType[] types = {PieceType.KNIGHT, PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN};
-
-        // mostra no terminal as opcoes
-        for(int i = 0; i < types.length; i++){
-            System.out.println("["+(i)+"] - "+types[i]);
-        }
-
-        // escolhe opcao de peca
-        Scanner sc = new Scanner(System.in);
-        int option = -1;
-        while(option < 0 || option >= types.length){
-            System.out.println("Escolha uma opcao");
-            option = sc.nextInt();
-            if(option < 0 || option >= types.length){
-                System.out.println("Opcao invalida! Digite novamente");
-            }
-        }
-
-        // retorna peca selecionada
-        return types[option];
-
-    }
-
-
-    /**
-     * Faz jogada da IA.
-     *
-     * @return Se deu certo a jogada
-     */
-    private boolean AIPlay(){
-        // tentanto movimento com AI
+    public void AIPlay(){
         if (AI_CONTROLLER.play()) {
             System.out.println("IA conseguiu mover");
-            verifyCheck();
-            return true;
-        } else {
-            System.out.println("IA nao conseguiu mover");
-            return false;
         }
+        else System.out.println("IA nao conseguiu mover");
+
+        boolean isAnyoneWon = BOARD_CONTROLLER.isUserWon() || BOARD_CONTROLLER.isAIWon();
+
+        removeAll();
+
+        if(isAnyoneWon) verifyWin();
+        else{
+            verifyCheck();
+            addPiecesButtons();
+        }
+
+        paintImmediately(getBounds());
     }
 
 
     /**
-     * Verifica check e mostra no terminal qual rei esta em check.
+     * Faz jogada do jogador de acordo com as posicoes selecionadas e logo em seguida chama o metodo AIPlay().
+     * Se algum peao chegou no final apos a movimentacao do jogador entao remove todos os componentes anteriores,
+     * cria objeto SelectPieceType e nao chama o metodo AIPlay().
+     * Alem disso, atualiza a tela e mostra check/vitoria no terminal.
      */
-    private void verifyCheck(){
-        // verificando se foi xeque no rei do usuario
-        if(BOARD_CONTROLLER.verifyCheckOnKing(USER_COLOR)){
-            System.out.println("Rei do usuario tomou xeque");
+    private void userPlay(){
+        // faz jogada do usuario
+        if(BOARD_CONTROLLER.move(true, fromLineButton, fromColumnButton, toLineButton, toColumnButton)){
+            System.out.println("Usuaruio conseguiu mover");
+
+            boolean isAnyoneWon = BOARD_CONTROLLER.isUserWon() || BOARD_CONTROLLER.isAIWon();
+
+            if(BOARD_CONTROLLER.hasPawnOnFinal() && !isAnyoneWon){
+                removeAll(); // remove todos os componentes da tela (botoes)
+
+                // opcoes de pecas
+                PieceType[] types = {PieceType.KNIGHT, PieceType.BISHOP, PieceType.ROOK, PieceType.QUEEN};
+
+                SelectPieceType selectPieceType = new SelectPieceType(IMAGE_SIZE, USER_COLOR, types, this);
+                final int X = (getWidth() - selectPieceType.getWidth()) / 2;
+                final int Y = (getHeight() - selectPieceType.getHeight()) / 2;
+                selectPieceType.setBounds(X, Y, selectPieceType.getWidth(), selectPieceType.getHeight());
+
+                add(selectPieceType);
+
+                paintImmediately(getBounds());
+            }
+            else{
+                paintImmediately(getBounds());
+                verifyCheck();
+                AIPlay();
+            }
         }
-        // verificando xeque no rei da IA
-        if (BOARD_CONTROLLER.verifyCheckOnKing(PieceColor.getOpponentOf(USER_COLOR))){
-            System.out.println("Rei da IA tomou xeque");
+        else {
+            System.out.println("Usuaruio nao conseguiu mover");
+            AIPlay();
         }
+
+    }
+
+    /**
+     * Funcao para comecar o jogo.
+     * Habilita o jogador selecionar as pecas para movimentar e faz IA jogar caso ela que comece o jogo.
+     */
+    private void start(){
+        paintImmediately(getBounds());
+
+        if(BOARD_CONTROLLER.isUserTurn()){
+            // adiciona os botoes para selecionar as pecas
+            removeAll();
+            addPiecesButtons();
+        }
+        else AIPlay();
     }
 
 
@@ -269,6 +242,51 @@ public class BoardPanel extends JComponent{
         // se o usuario venceu
         else if(BOARD_CONTROLLER.isUserWon()){
             System.out.println("Jogador venceu");
+        }
+    }
+
+
+    /**
+     * Adiciona os botoes para selecao de peca na tela. Cuidado para antes de adicionar remover os anteriores.
+     */
+    private void addPiecesButtons(){
+        // percorre posicoes do tabuleiro
+        for(int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                JButton button = new JButton();
+
+                // configura para o botao ser invisivel
+                button.setOpaque(false);
+                button.setContentAreaFilled(false);
+                button.setBorderPainted(false);
+                button.setRolloverEnabled(false); // efeito de quando coloca o mouse em cima do botao sendo desabilitado
+                button.setPressedIcon(null); // remove o icone exibido quando o botao eh selecionado
+                button.setDisabledIcon(null); // remove o icone exibido quando o botao esta desativado
+                button.setFocusPainted(false); // desabilita o destaque visual quando o botao esta em foco
+
+                // insere funcao de selecionar posicao ao botao
+                int line = i;
+                int column = j;
+                button.addActionListener(new ActionListener() {
+                    final int LINE = line;
+                    final int COLUMN = column;
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        // se conseguir atualizar a posicao selecionada
+                        if(selectPosition(LINE, COLUMN)) {
+                            // muda cor do botao
+                            button.setContentAreaFilled(true);
+                            button.setBackground(new Color(255, 0, 0, 166));
+                        }
+                    }
+                });
+
+                // redimensiona e insere botao na tela
+                button.setBounds(column * IMAGE_SIZE, line * IMAGE_SIZE, IMAGE_SIZE, IMAGE_SIZE);
+
+                // adiciona botao na tela
+                add(button);
+            }
         }
     }
 
@@ -320,6 +338,7 @@ public class BoardPanel extends JComponent{
         }
     }
 
+    @Override
     protected void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
@@ -329,54 +348,5 @@ public class BoardPanel extends JComponent{
         // desenha pecas
         drawPieces(g2);
 
-        g2.dispose();
-    }
-
-
-    /**
-     * Remove todos os componentes do tabuleiro e adiciona os botoes para selecao de peca na tela.
-     */
-    private void addPiecesButtons(){
-        // remove todos os componentes
-        removeAll();
-
-        // percorre posicoes do tabuleiro
-        for(int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                JButton button = new JButton();
-
-                // configura para o botao ser invisivel
-                button.setOpaque(false);
-                button.setContentAreaFilled(false);
-                button.setBorderPainted(false);
-                button.setRolloverEnabled(false); // efeito de quando coloca o mouse em cima do botao sendo desabilitado
-                button.setPressedIcon(null); // remove o icone exibido quando o botao eh selecionado
-                button.setDisabledIcon(null); // remove o icone exibido quando o botao esta desativado
-                button.setFocusPainted(false); // desabilita o destaque visual quando o botao esta em foco
-
-                // insere funcao de selecionar posicao ao botao
-                int line = i;
-                int column = j;
-                button.addActionListener(new ActionListener() {
-                    final int LINE = line;
-                    final int COLUMN = column;
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        // se conseguir atualizar a posicao selecionada
-                        if(selectPosition(LINE, COLUMN)) {
-                            // muda cor do botao
-                            button.setContentAreaFilled(true);
-                            button.setBackground(new Color(255, 0, 0, 166));
-                        }
-                    }
-                });
-
-                // redimensiona e insere botao na tela
-                button.setBounds(column * IMAGE_SIZE, line * IMAGE_SIZE, IMAGE_SIZE, IMAGE_SIZE);
-
-                // adiciona botao na tela
-                add(button);
-            }
-        }
     }
 }

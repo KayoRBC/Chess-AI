@@ -5,6 +5,8 @@ import com.chess_AI.view.gameScreen.BoardPanel;
 import com.chess_AI.view.initialScreen.InitialScreen;
 
 import javax.swing.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -24,7 +26,7 @@ public class Main {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
-        window.setTitle("Chass game");
+        window.setTitle("Chess game");
 
         // cria tela inicial
         InitialScreen initialScreen = new InitialScreen(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -49,6 +51,7 @@ public class Main {
 
         // cor do usuario
         final PieceColor USER_COLOR = initialScreen.getColor();
+        System.out.println("Cor seleciona pelo usuario: " + USER_COLOR);
 
         // define direcao do tabuleiro
         // por default peca branca é desenhada no topo do tabuleiro
@@ -62,8 +65,5 @@ public class Main {
         // adiciona tela do tabuleiro na tela principal
         window.add(boardPanel);
         window.pack();
-
-        // inicia jogo
-        boardPanel.start();
     }
 }

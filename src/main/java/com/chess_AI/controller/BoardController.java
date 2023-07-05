@@ -55,7 +55,10 @@ public class BoardController implements Cloneable{
      * @return Se deu certo movimentar a peca
      */
     public boolean move(boolean isUser, int fromLine, int fromColumn, int toLine, int toColumn){
-        if(!(isUserWon && isAIWon && hasPawnOnFinal())){
+
+        boolean isAnyoneWon = isUserWon || isAIWon;
+
+        if(!isAnyoneWon && !hasPawnOnFinal()){
             Piece fromPiece = board.getPiece(fromLine, fromColumn);
 
             boolean isUserMove = isUser && isUserTurn
@@ -278,7 +281,7 @@ public class BoardController implements Cloneable{
 
     /**
      * Adiciona um backup do tabuleiro atual na lista de backups.
-     * Entretanto nao eh realizada a copia da lista de backups.
+     * Entretanto nao eh realizada a copia da lista de backups, a mesma eh reaproveitada.
      */
     private void addBackup(){
         BoardController backup = clone();
@@ -288,7 +291,7 @@ public class BoardController implements Cloneable{
 
     /**
      * Retorna o tabuleiro atual para o ultimo backup salvo.
-     * Alem disso remove da lista de backups do ultimo salvo.
+     * Alem disso remove da lista de backups o ultimo salvo.
      *
      * @return Se deu certo retornar
      */
