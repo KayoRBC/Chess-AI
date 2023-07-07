@@ -1,14 +1,9 @@
 package com.chess_AI;
 
-import com.chess_AI.util.PieceColor;
-import com.chess_AI.view.gameScreen.BoardPanel;
 import com.chess_AI.view.initialScreen.InitialScreen;
 
 import javax.swing.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
+import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -25,45 +20,20 @@ public class Main {
         // inicia tela
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setTitle("Chess-AI");
         window.setResizable(false);
-        window.setTitle("Chess game");
 
-        // cria tela inicial
-        InitialScreen initialScreen = new InitialScreen(SCREEN_WIDTH, SCREEN_HEIGHT);
+        CardLayout layout = new CardLayout();
+        JPanel father = new JPanel();
+        father.setLayout(layout);
 
-        // adiciona tela inicial na tela principal
-        window.add(initialScreen);
+        InitialScreen initialScreen = new InitialScreen(680, 680, father, layout);
+
+        father.add(initialScreen, "Initial screen");
+
+        window.add(father);
         window.pack();
-        window.repaint();
-
         window.setLocationRelativeTo(null); // window vai aparecer no centro da tela
         window.setVisible(true);
-
-        // espera ate poder comecar o jogo
-        while(!initialScreen.canStart()){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        window.remove(initialScreen);
-
-        // cor do usuario
-        final PieceColor USER_COLOR = initialScreen.getColor();
-        System.out.println("Cor seleciona pelo usuario: " + USER_COLOR);
-
-        // define direcao do tabuleiro
-        // por default peca branca é desenhada no topo do tabuleiro
-        if(USER_COLOR == PieceColor.WHITE) {
-            PieceColor.setIsWhiteUp(false);
-        }
-
-        // cria tela do tabuleiro
-        BoardPanel boardPanel = new BoardPanel(SCREEN_WIDTH, USER_COLOR);
-
-        // adiciona tela do tabuleiro na tela principal
-        window.add(boardPanel);
-        window.pack();
     }
 }

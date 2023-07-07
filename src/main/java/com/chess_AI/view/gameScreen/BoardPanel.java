@@ -52,6 +52,8 @@ public class BoardPanel extends JComponent{
      * @param userColor Cor da peca do usuario
      */
     public BoardPanel(int screenSize, PieceColor userColor) {
+        if(userColor == PieceColor.WHITE) PieceColor.setIsWhiteUp(false);
+
         // define tamanho das imagens
         IMAGE_SIZE = screenSize/8;
 
@@ -72,7 +74,6 @@ public class BoardPanel extends JComponent{
         // cria objeto de AIController
         AI_CONTROLLER = new AIController(PieceColor.getOpponentOf(USER_COLOR), BOARD_CONTROLLER);
 
-        setVisible(false);
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentShown(ComponentEvent e) {
@@ -82,9 +83,7 @@ public class BoardPanel extends JComponent{
                 }
             }
         });
-        setVisible(true);
     }
-
 
     /**
      * Retorna o boardController utilizado.
