@@ -1,64 +1,25 @@
 package com.chess_AI.controller;
 
 import com.chess_AI.model.ai.AlphaBeta;
-import com.chess_AI.model.ai.PositionsNode;
 import com.chess_AI.util.PieceColor;
-import com.chess_AI.util.PieceType;
+import com.chess_AI.util.Move;
 
 /**
- * Esta classe representa o controller do model AI, ela contem as funcoes para manipulacao da IA.
+ * Esta interface representa o controller do model AI.
  */
-public class AIController {
-
-    /** Cor da peca da IA*/
-    private final PieceColor AI_COLOR;
-
-    /** Controller do tabuleiro que vai realizar as operacoes*/
-    private final BoardController BOARD_CONTROLLER;
+public interface AIController {
 
     /**
-     * Cria objeto de AIController com informacoes de cor da peca da IA e do tabuleiro que vai realizar as operacoes.
+     * Faz a IA predizer a melhor jogada para um tabuleiro de xadrez utilizando AlphaBeta.
+     * Usar quando for o turno da IA.
      *
-     * @param aIColor Cor da peca da IA
-     * @param boardController Controller do tabuleiro que vai realizar as operacoes
-     */
-    public AIController(PieceColor aIColor, BoardController boardController){
-        this.AI_COLOR = aIColor;
-        this.BOARD_CONTROLLER = boardController;
-    }
-
-
-    /**
-     * Faz a IA realizar uma jogada no tabuleiro.
+     * @param AIColor cor da peca da IA no tabuleiro de xadrez.
+     * @param boardController Tabuleiro para aplicar os movimentos
+     * @param maxDepth Maxima profundidade de busca do AlphaBeta
      *
-     * @return Se ela conseguir realizar a jogada
+     * @return A melhor jogada. Se nao encontrar retorna null.
      */
-    public boolean play(){
-        // se for o turno da IA
-        if(!BOARD_CONTROLLER.isUserTurn() && !BOARD_CONTROLLER.isUserWon() && !BOARD_CONTROLLER.isAIWon()) {
-
-            // calcula o melhor movimento com AlphaBeta
-            PositionsNode bestMove = AlphaBeta.search(BOARD_CONTROLLER, 4, true, AI_COLOR);
-
-            // posicoes do melhor movimento
-            int fromLine = bestMove.getFromLine();
-            int fromColumn = bestMove.getFromColumn();
-            int toLine = bestMove.getToLine();
-            int toColumn = bestMove.getToColumn();
-
-            // se for possivel mover
-            if(BOARD_CONTROLLER.move(false, fromLine, fromColumn, toLine, toColumn)){
-
-                // se for for troca de peao
-                if(BOARD_CONTROLLER.hasPawnOnFinal() && !(BOARD_CONTROLLER.isUserTurn())){;
-                    BOARD_CONTROLLER.changePawnType(true, PieceType.QUEEN);
-                }
-
-                // conseguiu realizar a jogada
-                return true;
-            }
-        }
-        // nao conseguiu realizar a jogada
-        return false;
+    static Move predict(PieceColor AIColor, BoardController boardController, int maxDepth){
+        return AlphaBeta.search(AIColor, boardController, maxDepth, true);
     }
 }

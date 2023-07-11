@@ -3,111 +3,202 @@ package com.chess_AI.model.ai;
 import com.chess_AI.controller.BoardController;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
+import com.chess_AI.util.Move;
+import com.chess_AI.util.Position;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
- * Esta classe representa a estategia de busca AlphaBeta para um tabuleiro
+ * Esta interface representa a estategia de busca AlphaBeta para um tabuleiro de xadrez.
  */
-public abstract class AlphaBeta {
+public interface AlphaBeta {
 
     /**
-     * Busca e retorna a melhor movimento esperado de uma peca de acordo com o tabuleiro atual
+     * Busca e retorna a melhor movimento esperado em um tabuleiro.
      *
+     * @param AIColor Cor da peca da IA
      * @param boardController  Tabuleiro atual para fazer a busca
      * @param maxDepth Maxima profundidade de busca
      * @param isMax Se quer procurar o movimento esperado que maximize seus ganhos
-     * @param allyColor Cor da peca da IA
-     * @return Posicoes de origem e destino para movimentar a peca
+     * @return A melhor jogada encontrada. Se nao encontrar retorna null.
      */
-    public static PositionsNode search(BoardController boardController, int maxDepth, boolean isMax, PieceColor allyColor){
-        PositionsNode root = new PositionsNode(-1, -1, -1, -1);
-        return alphaBeta(root, boardController, 0, maxDepth, isMax, allyColor);
+    static Move search(PieceColor AIColor, BoardController boardController, int maxDepth, boolean isMax){
+        Node initial = new Node(null, 0, boardController);
+
+        if(!boardController.isUserTurn()) {
+            alphaBeta(initial, maxDepth, 0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, isMax, AIColor);
+        }
+
+        return initial.move;
     }
 
     /**
-     * Aplica busca AlphaBeta recursivo
+     * Faz busca alpha beta recursivo.
      *
-     * @param current Posicao atual
-     * @param board Tabuleiro atual
-     * @param depth Profundidade atual
+     * @param current Node atual
      * @param maxDepth Profundidade maxima
-     * @param isMax Se a profundidade atual busca maximizar os ganhos
-     * @param allyColor Cor da peca da IA
-     * @return Melhor movimento esperado
+     * @param currentDepth Profundidade atual
+     * @param alpha Valor de alpha
+     * @param beta Valor de beta
+     * @param isMax Se busca maximizar a heuristica
+     * @param AIColor Cor da peca da IA
+     * @return Current com o melhor movimento registrado. Se nao conseguir encontrar entao nao vai mudar
+     * o movimento registrado.
      */
-    private static PositionsNode alphaBeta(PositionsNode current, BoardController board, int depth, int maxDepth, boolean isMax, PieceColor allyColor){
-        // se chegar na profundidade maxima
-        if(depth >= maxDepth){
-            double value = heuristic(board, allyColor);
-            current.setValue(value);
+    private static Node alphaBeta(Node current, int maxDepth, int currentDepth,
+                           double alpha, double beta, boolean isMax, PieceColor AIColor){
+
+        Node[] childrens = generateChildrens(current);
+
+        // lista para caso tenha mais de um Node com o mesmo valor de heuristica
+        ArrayList<Node> bestChildrens = new ArrayList<>();
+
+        BoardController board = current.BOARD_CONTROLLER; // tabuleiro para aplicar as movimentacoes
+
+        // se chegar no final da arvore
+        boolean isTerminalNode = childrens.length == 0 || maxDepth - currentDepth == 0;
+        if(isTerminalNode){
+            current.value = getHeuristic(board, AIColor);
+            return current;
         }
-        // se ainda nao chegou na profundidade maxima
+        // encontra o melhores filhos e insere na lista bestChildrens
         else{
-            // setando valor inicial para o Node atual
-            // se MAX
             if(isMax){
-                current.setValue(Double.NEGATIVE_INFINITY);
+
+                double bestValue = Double.NEGATIVE_INFINITY;
+
+                for (Node child : childrens) {
+                    if(board.makeMove(false, child.move)) {
+                        if (board.verifyPawnPromote()) board.makePawnPromote(false, PieceType.QUEEN);
+
+                        Node b = alphaBeta(child, maxDepth, currentDepth + 1, alpha, beta, false, AIColor);
+                        board.returnBackup();
+
+                        // verifica se eh melhor filho e coloca na lista bestChildrens
+                        if(b.value > bestValue){
+                            bestValue = b.value;
+                            bestChildrens = new ArrayList<>();
+                            bestChildrens.add(b);
+                        }
+                        else if(b.value == bestValue) bestChildrens.add(b);
+
+                        if(bestValue > alpha) alpha = bestValue;
+
+                        // verifica se o jogador minimizador ja encontrou uma jogada melhor
+                        if(alpha > beta) break;
+                    }
+                }
             }
-            // se MIN
-            else{
-                current.setValue(Double.POSITIVE_INFINITY);
+            else{ // min
+
+                double bestValue = Double.POSITIVE_INFINITY;
+
+                for (Node child : childrens) {
+                    if(board.makeMove(true, child.move)) {
+                        if (board.verifyPawnPromote()) board.makePawnPromote(true, PieceType.QUEEN);
+
+                        Node b = alphaBeta(child, maxDepth, currentDepth + 1, alpha, beta, true, AIColor);
+                        board.returnBackup();
+
+                        // verifica se eh melhor filho e coloca na lista bestChildrens
+                        if(b.value < bestValue){
+                            bestValue = b.value;
+                            bestChildrens = new ArrayList<>();
+                            bestChildrens.add(b);
+                        }
+                        else if (b.value == bestValue) bestChildrens.add(b);
+
+                        if(bestValue < beta) beta = bestValue;
+
+                        // verifica se o jogaador maximizador ja encontrou uma jogada melhor
+                        if(beta < alpha) break;
+                    }
+                }
             }
-            // percorrendo posicoes para fromPiece
-            for(int fromLine = 0; fromLine < 8; fromLine++){
-                for(int fromColumn = 0; fromColumn < 8; fromColumn++){
-                    // percorrendo posicoes para toPiece
-                    for(int toLine = 0; toLine < 8; toLine++){
-                        for(int toColumn = 0; toColumn < 8; toColumn++){
+        }
 
-                            // se conseguir fazer movimento de fromPiece para toPiece
-                            if(board.move(board.isUserTurn(), fromLine, fromColumn, toLine, toColumn)){
-                                // se for for troca de peao
-                                if(board.hasPawnOnFinal()){;
-                                    board.changePawnType(board.isUserTurn(), PieceType.QUEEN);
-                                }
+        if(bestChildrens.size() > 0) {
+            // se estar na profundidade mais rasa da arvore entao retropagar a movimentacao do filho ao pai
+            if (currentDepth == 0) {
+                // sorteia um filho aleatorio com melhor heuristica
+                Random random = new Random();
+                int i = random.nextInt(bestChildrens.size());
+                current.move = bestChildrens.get(i).move;
+            }
 
-                                // criando filho
-                                PositionsNode child = new PositionsNode(fromLine, fromColumn, toLine, toColumn);
+            // retropropaga o valor da heuristica do melhor filho ao pai
+            current.value = bestChildrens.get(0).value;
+        }
+        return current;
+    }
 
-                                // procurando melhor valor no filho
-                                PositionsNode best = alphaBeta(child, board, depth + 1, maxDepth, !isMax, allyColor);
-                                double bestValue = best.getValue();
+    /**
+     * Cria os filhos do Node atual. Entretanto os filhos apenas possuem a movimentacao registrada.
+     * Cria independentemente se for o turno da IA ou do usuario.
+     *
+     * @param current Node atual
+     * @return Lista de filhos do node.
+     */
+    private static Node[] generateChildrens(Node current){
+        ArrayList<Node> childrens = new ArrayList<>();
 
-                                // se for max e o melhor valor foi maior do que o registrado
-                                if ((isMax && bestValue > current.getValue())
-                                        // ou se for min e melhor valor for melhor do que o registrado
-                                        || (!isMax && bestValue < current.getValue())
-                                        // ou se o melhor valor for igual ao valor atual, tem 10% de chance de trocar
-                                        || (bestValue == current.getValue() && Math.random() < 0.1)) {
-                                    // registrando melhor valor no Node atual
-                                    current.setValue(bestValue);
-                                    // retropopagando posicoes de movimentacao se profundidade atual for 0
-                                    if (depth == 0) {
-                                        transferPositions(best, current);
-                                    }
-                                }
-                                // retornando backup
-                                board.returnBackup();
+        BoardController boardController = current.BOARD_CONTROLLER;
+
+        // cria todas as movimentacoes possivies no tabuleiro
+        for(int fromLine = 0; fromLine < 8; fromLine++){
+            for(int fromColumn = 0; fromColumn < 8; fromColumn++){
+                for(int toLine = 0; toLine < 8; toLine++){
+                    for(int toColumn = 0; toColumn < 8; toColumn++){
+                        Move move = new Move(fromLine, fromColumn, toLine, toColumn);
+
+                        // se conseguir aplicar a movimentacao entao adiciona na lista e retorna backup
+                        if(boardController.makeMove(true, move)){
+                            if(current.BOARD_CONTROLLER.verifyPawnPromote()){ // se algum peao chegou no final do tabuleiro
+                                current.BOARD_CONTROLLER.makePawnPromote(true, PieceType.QUEEN);
                             }
+                            childrens.add(new Node(move, 0, boardController));
+                            boardController.returnBackup();
+                        }
+                        else if(boardController.makeMove(false, move)){
+                            if(current.BOARD_CONTROLLER.verifyPawnPromote()){ // se algum peao chegou no final do tabuleiro
+                                current.BOARD_CONTROLLER.makePawnPromote(false, PieceType.QUEEN);
+                            }
+                            childrens.add(new Node(move, 0, boardController));
+                            boardController.returnBackup();
                         }
                     }
                 }
             }
         }
-        // retornando Node atual com o melhor valor encontrado entre os filhos
-        return current;
+        return childrens.toArray(new Node[0]);
     }
 
     /**
-     * Retroproga a movimentacao registrada de uma movimentacao registrada ate outra
+     * Calcula e retorna a heuristica de um boardController para uma respectiva cor.
      *
-     * @param from Movimentacao para retropropagar
-     * @param to Movimentacao que vai receber a nova movimentacao
+     * @param boardController Tabuleiro para calcular a heuristica
+     * @param color Cor para calcular a heuristica
+     * @return O valor do resultado da heuristica, quanto maior melhor para a cor selecionada.
      */
-    private static void transferPositions(PositionsNode from, PositionsNode to){
-        to.setFromLine(from.getFromLine());
-        to.setFromColumn(from.getFromColumn());
-        to.setToLine(from.getToLine());
-        to.setToColumn(from.getToColumn());
+    private static double getHeuristic(BoardController boardController, PieceColor color){
+        double heuristic = 0; // resultado da heuristica
+
+        // percorre posicoes do tabuleiro
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                Position position = new Position(i, j);
+
+                PieceType type = boardController.getTypeOf(position);
+                PieceColor pieceColor = boardController.getColorOf(position);
+
+                boolean isEnemy = color != pieceColor;
+                if(isEnemy) heuristic -= getWeight(type);
+                else heuristic += getWeight(type);
+            }
+        }
+
+        return heuristic;
     }
 
     /**
@@ -125,48 +216,5 @@ public abstract class AlphaBeta {
             case KING -> 1000;
             default -> 0;
         };
-    }
-
-    /**
-     * Calcula a heuristica de um estado do tabuleiro para uma determinada cor, quanto maior melhor
-     *
-     * @param state Tabuleiro atual
-     * @param allyColor Cor da peca para calcular a heuristica
-     * @return O valor do resultado da heuristica
-     */
-    private static double heuristic(BoardController state, PieceColor allyColor){
-        return calculateWeights(state, allyColor);
-    }
-
-    /**
-     * Calcula de heuristica com base nos pesos das pecas e como elas impactam a cor selecionada
-     *
-     * @param state Tabuleiro para calcular
-     * @param allyColor Cor da peca para calcular
-     * @return Valor da heuristica com base nos pesos.
-     */
-    private static double calculateWeights(BoardController state, PieceColor allyColor) {
-        // variavel que vai armazenar o resultado
-        double sum = 0;
-        // percorrendo posicoes do tabuleiro
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
-                // pegando cor e tipo da peca em certa posicao
-                PieceType type = state.getTypeOf(i, j);
-                PieceColor color = state.getColorOf(i, j);
-                // se peca inimiga
-                if(color != allyColor){
-                    // subtrai
-                    sum -= getWeight(type);
-                }
-                // peca aliada
-                else{
-                    // soma
-                    sum += getWeight(type);
-                }
-            }
-        }
-        // retornando resultado
-        return sum;
     }
 }

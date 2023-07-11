@@ -1,9 +1,9 @@
 package com.chess_AI.util;
 
 /**
- * Esta classe armazena as funcoes que nao estao associadas a nenhuma camada e podem ser utilizadas em qualquer camada do projeto
+ * Esta interface armazena as funcoes que nao estao associadas a nenhuma camada e podem ser utilizadas em qualquer camada do projeto
  */
-public abstract class Util {
+public interface Functions {
 
     /**
      * Retorna um vetor com os valores intermediarios de um valor ate outro.

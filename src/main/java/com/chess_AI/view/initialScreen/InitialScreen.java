@@ -18,17 +18,11 @@ import java.awt.image.BufferedImage;
  */
 public class InitialScreen extends JPanel {
 
-    /** Largura da janela*/
-    private final int SCREEN_WIDTH;
-
     /** Altura da janela*/
-    private final int SCREEN_HEIGHT;
+    private final int SCREEN_SIZE;
 
-    /** Painel que armazena essa classe*/
-    private final JPanel FATHER_SCREEN;
-
-    /** Layout do componente pai*/
-    private final CardLayout FATHER_LAYOUT;
+    /** Painel que armazena esse panel*/
+    private final JPanel PRINCIPAL_PANEL;
 
     /** Cor selecionada pelo usuario*/
     private PieceColor selectedColor = null;
@@ -36,30 +30,26 @@ public class InitialScreen extends JPanel {
     /**
      * Cria e retorna objeto de InitialScreen.
      *
-     * @param screenWidth Largura da tela
-     * @param screenHeight Altura da tela
-     * @param fatherScreen Container pai
-     * @param fatherLayout Layout do pai
+     * @param screenSize Tamanho da tela (screenSize X screenSize)
+     * @param principalPanel Tela principal onde vai ser inserido esse objeto.
      */
-    public InitialScreen(int screenWidth, int screenHeight, JPanel fatherScreen, CardLayout fatherLayout){
-        SCREEN_WIDTH = screenWidth;
-        SCREEN_HEIGHT = screenHeight;
-        FATHER_SCREEN = fatherScreen;
-        FATHER_LAYOUT = fatherLayout;
+    public InitialScreen(int screenSize, JPanel principalPanel){
+        SCREEN_SIZE = screenSize;
+        PRINCIPAL_PANEL = principalPanel;
 
         // define configuracoes do painel
-        setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
+        setPreferredSize(new Dimension(SCREEN_SIZE, SCREEN_SIZE));
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.gray);
 
         // adiciona componentes no painel
         addTitle();
-        add(Box.createRigidArea(new Dimension(0, SCREEN_HEIGHT / 16)));
+        add(Box.createRigidArea(new Dimension(0, SCREEN_SIZE / 16)));
         addColorSelector();
-        add(Box.createRigidArea(new Dimension(0, SCREEN_HEIGHT / 8)));
+        add(Box.createRigidArea(new Dimension(0, SCREEN_SIZE / 8)));
         JLabel errorText = createErrorText();
         add(errorText);
-        add(Box.createRigidArea(new Dimension(0, SCREEN_HEIGHT / 32)));
+        add(Box.createRigidArea(new Dimension(0, SCREEN_SIZE / 32)));
         addStartButton(errorText);
         add(Box.createVerticalGlue());
         addAuthor();
@@ -70,7 +60,7 @@ public class InitialScreen extends JPanel {
      */
     private void addTitle(){
         JLabel gameTitle = new JLabel("Chess-AI");
-        Font font = new Font(gameTitle.getFont().getName(), Font.BOLD, Math.round(SCREEN_HEIGHT / 8.0f * 0.90f));
+        Font font = new Font(gameTitle.getFont().getName(), Font.BOLD, Math.round(SCREEN_SIZE / 8.0f * 0.90f));
         gameTitle.setFont(font);
 
         gameTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -83,7 +73,7 @@ public class InitialScreen extends JPanel {
     private void addColorSelector(){
         // adiciona um titulo em cima de color selector
         JLabel text = new JLabel("CHOOSE YOUR PIECE COLOR");
-        Font font = new Font(text.getFont().getName(), Font.BOLD, Math.round(SCREEN_HEIGHT / 8.0f * 0.30f));
+        Font font = new Font(text.getFont().getName(), Font.BOLD, Math.round(SCREEN_SIZE / 8.0f * 0.30f));
         text.setFont(font);
         text.setAlignmentX(CENTER_ALIGNMENT);
         add(text);
@@ -93,8 +83,8 @@ public class InitialScreen extends JPanel {
         colorSelector.setBackground(getBackground());
 
         // define tamanho do color selector
-        int panelWidth = SCREEN_WIDTH / 2;
-        int panelHeight = Math.round(SCREEN_HEIGHT / 8.0f * 1.5f);
+        int panelWidth = SCREEN_SIZE / 2;
+        int panelHeight = Math.round(SCREEN_SIZE / 8.0f * 1.5f);
         Dimension panelSize = new Dimension(panelWidth, panelHeight);
         colorSelector.setPreferredSize(panelSize);
         colorSelector.setMaximumSize(panelSize);
@@ -173,7 +163,7 @@ public class InitialScreen extends JPanel {
         JLabel error = new JLabel(" ");
 
         // define fonte para o texto de erro
-        Font font = new Font(error.getFont().getName(), Font.BOLD, Math.round(SCREEN_HEIGHT / 8.0f * 0.20f));
+        Font font = new Font(error.getFont().getName(), Font.BOLD, Math.round(SCREEN_SIZE / 8.0f * 0.20f));
         error.setFont(font);
 
         error.setForeground(Color.red);
@@ -192,7 +182,7 @@ public class InitialScreen extends JPanel {
         JButton start = new JButton("START");
 
         // define o tamanho do botao
-        Dimension size = new Dimension(SCREEN_WIDTH / 8 * 3 , SCREEN_WIDTH / 8);
+        Dimension size = new Dimension(SCREEN_SIZE / 8 * 3 , SCREEN_SIZE / 8);
         start.setPreferredSize(size);
         start.setMaximumSize(size);
         start.setMaximumSize(size);
@@ -205,6 +195,8 @@ public class InitialScreen extends JPanel {
         start.setBorder(BorderFactory.createLineBorder(Color.WHITE, size.width/64));
         start.setForeground(Color.WHITE);
         start.setBackground(Color.GREEN);
+
+        start.setFocusPainted(false); // para nao aparecer o texto dentro do botao selecionado
 
         // adiciona funcao para mudar as cores do botao dependendo da acao do mouse do usuario
         start.addMouseListener(new MouseListener() {
@@ -233,16 +225,29 @@ public class InitialScreen extends JPanel {
         });
 
         // adiciona funcao para mudar para a pagina do tabuleiro de xadrez
+        InitialScreen initialScreen = this;
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(selectedColor != null) {
                     errorText.setText(" ");
-                    FATHER_SCREEN.add(new BoardPanel(SCREEN_WIDTH, selectedColor), "Chess");
-                    FATHER_LAYOUT.show(FATHER_SCREEN, "Chess");
+                    //FATHER_SCREEN.add(new BoardPanel(SCREEN_SIZE, selectedColor), "Chess");
+                    //FATHER_LAYOUT.show(FATHER_SCREEN, "Chess");
+
+                    PRINCIPAL_PANEL.add(new BoardPanel(SCREEN_SIZE, selectedColor, PRINCIPAL_PANEL), "Chess");
+
+                    CardLayout layout = (CardLayout) PRINCIPAL_PANEL.getLayout();
+                    layout.removeLayoutComponent(initialScreen);
+                    PRINCIPAL_PANEL.remove(initialScreen);
+
+                    layout.show(PRINCIPAL_PANEL, "Chess");
+
+                    //PRINCIPAL_PANEL.add(new WinLabel(SCREEN_SIZE, false,
+                    //        PieceColor.WHITE, PRINCIPAL_PANEL), "teste");
+                    //layout.show(PRINCIPAL_PANEL, "teste");
                 }
                 else{
-                    errorText.setText("SELECIONE UMA COR ANTES DE COMEÇAR!");
+                    errorText.setText("SELECT A COLOR!");
                 }
             }
         });
@@ -258,7 +263,7 @@ public class InitialScreen extends JPanel {
         JLabel text = new JLabel("Author: KayoRBC");
 
         // define a fonte do texto
-        Font font = new Font(text.getFont().getName(), Font.BOLD, Math.round(SCREEN_HEIGHT / 8.0f * 0.19f));
+        Font font = new Font(text.getFont().getName(), Font.BOLD, Math.round(SCREEN_SIZE / 8.0f * 0.19f));
         text.setFont(font);
 
         text.setAlignmentX(Component.CENTER_ALIGNMENT);

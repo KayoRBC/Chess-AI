@@ -1,7 +1,7 @@
 package com.chess_AI.util;
 
 /**
- * Esta classe armazena as possiveis cores das pecas e o sentido das pecas brancas no tabuleiro.
+ * Esta classe armazena as possiveis cores das pecas e informacoes para serem utilizadas nas regras do tabuleiro de xadrez.
  */
 public enum PieceColor {
 

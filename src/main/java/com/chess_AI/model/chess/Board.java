@@ -3,11 +3,13 @@ package com.chess_AI.model.chess;
 import com.chess_AI.model.chess.Piece.*;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
-import com.chess_AI.util.Util;
+import com.chess_AI.util.Functions;
+import com.chess_AI.util.Move;
+import com.chess_AI.util.Position;
 
 /**
  * Esta classe armazena o tabuleiro de xadrez, possui a matriz de pecas do tabuleiro
- * e funcoes para manipulacao da mesma.
+ * e funcoes para manipulacao da mesma sem regras.
  */
 public class Board implements Cloneable{
 
@@ -17,12 +19,14 @@ public class Board implements Cloneable{
     /**
      * Cria e retorna um tabuleiro de xadrez com o estado inicial do jogo.
      */
-    public Board() {
+    public Board(){
         pieces = createInitialState();
     }
 
     /**
      * Cria e retorna uma matriz de pecas com as posicoes iniciais delas no tabuleiro.
+     * Se as pecas dao colocadas em cima ou em baixo do tabuleiro eh determinado por
+     * PieceColor no metodo isWhiteUp().
      *
      * @return Uma matriz de pecas
      */
@@ -65,12 +69,13 @@ public class Board implements Cloneable{
      * @return Array de NullPiece
      */
     private Piece[] createNullLine(){
-        // cria uma linha com pecas vazias
         Piece[] nullLine = new Piece[8];
+
+        // insere NullPieces em toda linha
         for(int i = 0; i < nullLine.length; i++){
             nullLine[i] = new NullPiece();
         }
-        // retorna a linha
+
         return nullLine;
     }
 
@@ -81,12 +86,13 @@ public class Board implements Cloneable{
      * @return Array de Pawn
      */
     private Piece[] createFrontLine(PieceColor color){
-        // cria uma linha de peoes
         Piece[] frontLine = new Piece[8];
+
+        // insere peoes em toda linha
         for(int i = 0; i < frontLine.length; i++){
             frontLine[i] = new Pawn(color);
         }
-        // retorna a linha
+
         return frontLine;
     }
 
@@ -108,64 +114,50 @@ public class Board implements Cloneable{
         backLine[6] = new Knight(color);
         backLine[7] = new Rook(color);
 
-        // retorna linha de tras
         return backLine;
     }
 
     /**
-     * Troca a posicao de duas pecas do tabuleiro.
+     * Troca as posicoes de duas pecas no tabuleiro.
      *
-     * @param fromLine Posicao da linha da primeira peca
-     * @param fromColumn Posicao da coluna da primeira peca
-     * @param toLine Posicao da linha da segunda peca
-     * @param toColumn Posicao da coluna da segunda peca
+     * @param first Primeira posicao
+     * @param second Segunda posicao
      */
-    public void switchPieces(int fromLine, int fromColumn, int toLine, int toColumn){
-        // pega primeira peca
-        Piece fromPiece = getPiece(fromLine, fromColumn);
+    public void switchPieces(Position first, Position second){
+        Piece firstPiece = getPiece(first);
 
-        // pega segunda peca
-        Piece toPiece = getPiece(toLine, toColumn);
+        Piece secondPiece = getPiece(second);
 
-        // se pecas existirem
-        if(fromPiece != null && toPiece != null) {
-
-            // troca posicoes
-            pieces[toLine][toColumn] = fromPiece;
-            pieces[fromLine][fromColumn] = toPiece;
+        // troca posicoes
+        if(firstPiece != null && secondPiece != null) {
+            pieces[first.LINE][first.COLUMN] = secondPiece;
+            pieces[second.LINE][second.COLUMN] = firstPiece;
         }
     }
 
     /**
-     * Remove uma peca de uma determinada posicao do tabuleiro.
+     * Remove uma peca de uma determinada posicao do tabuleiro e substitui por uma NullPiece.
      *
-     * @param line Posicao da linha da peca
-     * @param column Posicao da coluna da peca
+     * @param position Posicao da peca para remover
      */
-    public void removePiece(int line, int column){
-        // pega peca da posicao que quer retirar
-        Piece piece = getPiece(line, column);
-
-        // se peca existe
-        if(piece != null){
-            // substitui por uma peca vazia
-            pieces[line][column] = new NullPiece();
+    public void removePiece(Position position){
+        try {
+            pieces[position.LINE][position.COLUMN] = new NullPiece();
+        } catch (Exception e) {
+            return;
         }
     }
 
     /**
      * Retorna a peca de uma determinada posicao do tabuleiro.
      *
-     * @param line Posicao da linha da peca
-     * @param column Posicao da coluna da peca
+     * @param position Posicao no tabuleiro
      * @return A peca que esta na posicao escolhida (se nao existir retorna null)
      */
-    public Piece getPiece(int line, int column){
+    public Piece getPiece(Position position){
         try{
-            // se peca existe retorna ela
-            return pieces[line][column];
-        } catch (Exception e) {
-            // se peca nao existe retorna null
+            return pieces[position.LINE][position.COLUMN];
+        } catch (Exception e){
             return null;
         }
     }
@@ -175,67 +167,60 @@ public class Board implements Cloneable{
      *
      * @param type Tipo da peca
      * @param color Cor da peca
-     * @param line Posicao da linha para inserir
-     * @param column Posicao da coluna para inserir
      * @param hasMoved Se foi movimentada alguma vez
+     * @param position Posicao no tabuleiro
      * @return Se conseguiu inserir a peca
      */
-    public boolean setPiece(PieceType type, PieceColor color, int line, int column, boolean hasMoved){
-        // se linha e coluna estiverem dentro do tabuleiro
-        if(-1 < line && line < 8 && -1 < column && column < 8){
-            Piece piece;
-            switch (type) {
-                case PAWN -> piece = new Pawn(color);
-                case KNIGHT -> piece = new Knight(color);
-                case BISHOP -> piece = new Bishop(color);
-                case ROOK -> piece = new Rook(color);
-                case QUEEN -> piece = new Queen(color);
-                case KING -> piece = new King(color);
-                default -> {
-                    return false;
-                }
+    public boolean setPiece(PieceType type, PieceColor color, boolean hasMoved, Position position){
+        // cria peca
+        Piece piece;
+        switch (type) {
+            case PAWN -> piece = new Pawn(color);
+            case KNIGHT -> piece = new Knight(color);
+            case BISHOP -> piece = new Bishop(color);
+            case ROOK -> piece = new Rook(color);
+            case QUEEN -> piece = new Queen(color);
+            case KING -> piece = new King(color);
+            default -> {
+                return false;
             }
-            // atualiza estado da peca
-            piece.setHasMoved(hasMoved);
-
-            // insere peca no tabuleiro
-            pieces[line][column] = piece;
-
-            // conseguiu inserir
-            return true;
         }
-        // nao conseguiu inserir
-        return false;
+        piece.setHasMoved(hasMoved);
+
+        // insere peca no tabuleiro
+        try{
+            pieces[position.LINE][position.COLUMN] = piece;
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
      * Verifica se uma determinada posicao do tabuleiro eh perigosa para uma determinada cor
      *
      * @param allyColor Cor da peca para verificar se eh perigosa a posicao
-     * @param checkLine Posicao da linha para verificar
-     * @param checkColumn Posicao da coluna para verificar
+     * @param position Posicao para verificar se eh segura
      * @return Se a posicao eh perigosa
      */
-    public boolean isDungerousPosition(PieceColor allyColor, int checkLine, int checkColumn){
+    public boolean isDungerousPosition(PieceColor allyColor, Position position){
         // percorre posicoes do tabuleiro
         for(int fromLine = 0; fromLine < 8; fromLine++){
             for(int fromColumn = 0; fromColumn < 8; fromColumn++){
+                Position from = new Position(fromLine, fromColumn);
+                Piece piece = getPiece(from);
 
-                // pega peca de uma determinada posicao
-                Piece currentPiece = getPiece(fromLine, fromColumn);
-
-                // se peca for inimiga
-                if(currentPiece.getColor() != allyColor){
-                    // se peca inimiga pode ir para a posicao de verificacao
-                    if(currentPiece.isValidMove(this, fromLine, fromColumn, checkLine, checkColumn)){
-                        // posicao perigosa
-                        return true;
+                if(piece != null) {
+                    boolean isEnemy = piece.getColor() != allyColor;
+                    if (isEnemy) {
+                        // verifica se peca inimiga pode ir na posicao aliada
+                        Move move = new Move(from, position);
+                        if (piece.isValidMove(this, move)) return true; // posicao perigosa
                     }
                 }
             }
         }
-        // posicao nao perigosa
-        return false;
+        return false; // posicao segura
     }
 
     /**
@@ -261,19 +246,16 @@ public class Board implements Cloneable{
             finalColumn--;
         }
 
-        int[] columns = Util.createIntermediateValues(startColumn, finalColumn);
-
+        // verifica se as colunas da linha sao seguras
+        int[] columns = Functions.createIntermediateValues(startColumn, finalColumn);
         if(columns != null){
             for(int column: columns){
-
-                Piece piece = getPiece(line, column);
-
-                if(piece != null && isDungerousPosition(allyColor, line, column)) return false;
+                Position position = new Position(line, column);
+                if(isDungerousPosition(allyColor, position)) return false;
             }
         }
         return true;
     }
-
 
     @Override
     public Board clone() {

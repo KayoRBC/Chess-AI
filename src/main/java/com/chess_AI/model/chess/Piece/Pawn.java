@@ -3,6 +3,7 @@ package com.chess_AI.model.chess.Piece;
 import com.chess_AI.model.chess.Board;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
+import com.chess_AI.util.Move;
 
 /**
  * Esta classe representa a peca do peao, possui as regras de movimentacao e o estado da peca.
@@ -19,30 +20,25 @@ public class Pawn extends Piece{
     }
 
     @Override
-    public boolean isValidMove(Board board, int fromLine, int fromColumn, int toLine, int toColumn) {
-        Piece fromPiece = board.getPiece(fromLine, fromColumn);
-        Piece toPiece = board.getPiece(toLine, toColumn);
+    public boolean isValidMove(Board board, Move move) {
+        Piece fromPiece = board.getPiece(move.FROM);
+        Piece toPiece = board.getPiece(move.TO);
 
-        int horizontalDistance = Math.abs(fromColumn - toColumn);
-        int verticalDistance = Math.abs(fromLine - toLine);
+        int verticalDistance = Math.abs(move.FROM.LINE - move.TO.LINE);
+        int horizontalDistance = Math.abs(move.FROM.COLUMN - move.TO.COLUMN);
 
-        if(fromPiece instanceof Pawn && toPiece != null
-                && fromPiece.getColor() != toPiece.getColor()
-                && verifyDirection(board, fromColumn, fromLine, toLine))
-            {
+        if(fromPiece instanceof Pawn && toPiece != null && fromPiece.getColor() != toPiece.getColor()
+                && verifyDirection(fromPiece.getColor(), move.FROM.LINE, move.TO.LINE)){
 
             if(toPiece instanceof NullPiece){
-                if(fromPiece.hasMoved) return verticalDistance == 1
-                                                && isVerticalValid(board, fromLine, fromColumn, toLine, toColumn);
+                if(fromPiece.hasMoved) return verticalDistance == 1 && isVerticalValid(board, move);
 
                 // peca nao foi movimentada ainda
-                else return verticalDistance < 3
-                            && isVerticalValid(board, fromLine, fromColumn, toLine, toColumn);
+                else return verticalDistance < 3 && isVerticalValid(board, move);
             }
             else{
                 boolean isOneStepDiagonal = horizontalDistance == 1 && verticalDistance == 1;
-
-                return isOneStepDiagonal && isDiagonalValid(board, fromLine, fromColumn, toLine, toColumn);
+                return isOneStepDiagonal && isDiagonalValid(board, move);
             }
         }
 
@@ -50,28 +46,24 @@ public class Pawn extends Piece{
     }
 
     /**
-     * Verifica a direcao de movimentacao vertical de acordo com a cor
+     * Verifica se a direcao de movimentacao vertical esta certa de acordo com a cor.
      *
-     * @param board Tabuleiro que esta a peca
+     * @param color Cor da peca para verificar
      * @param fromLine Posicao da linha de origem
-     * @param column Posicao da coluna
      * @param toLine Posicao da linha de destino
-     * @return Se direcao da movimentacao certa
+     * @return Se direcao da movimentacao esta certa
      */
-    private boolean verifyDirection(Board board, int column, int fromLine, int toLine){
-        Piece fromPiece = board.getPiece(fromLine, column);
-        // se peca for branca
-        if(fromPiece.getColor() == PieceColor.WHITE){
+    private boolean verifyDirection(PieceColor color, int fromLine, int toLine){
+        if(color == PieceColor.WHITE){
             // se branca comeca por cima | valido se estar se movimentando para baixo
             if(PieceColor.isWhiteUp()) return fromLine - toLine < 0;
-                // se branca comeca por baixo | valido se estar se movimentando para cima
+            // se branca comeca por baixo | valido se estar se movimentando para cima
             else return fromLine - toLine > 0;
         }
-        // se peca for preta
         else{
             // se branca comeca por cima | valido se estar se movimentando para cima
             if(PieceColor.isWhiteUp()) return fromLine - toLine > 0;
-                // se branca comeca por baixo | valido se estar se movimentando para baixo
+            // se branca comeca por baixo | valido se estar se movimentando para baixo
             else return fromLine - toLine < 0;
         }
     }

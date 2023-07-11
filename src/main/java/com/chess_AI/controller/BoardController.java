@@ -4,16 +4,21 @@ import com.chess_AI.model.chess.Board;
 import com.chess_AI.model.chess.Piece.*;
 import com.chess_AI.util.PieceColor;
 import com.chess_AI.util.PieceType;
+import com.chess_AI.util.Move;
+import com.chess_AI.util.Position;
 
 import java.util.ArrayList;
 
 /**
- * Esta classe representa o controller do model chess, ela contem as operacores de manipulacao de uma tabuleiro de xadrez.
+ * Esta classe representa o controller do model chess, ela contem as regras do tabuleiro de xadrez.
  */
 public class BoardController implements Cloneable{
 
     /** Armazena os estados dos tabuleiros anteriores*/
-    private ArrayList<BoardController> backups = new ArrayList<>();
+    private final ArrayList<BoardController> BACKUPS = new ArrayList<>();
+
+    /** Cor da peca do usuario*/
+    private final PieceColor USER_COLOR;
 
     /** Tabuleiro que armazena as pecas*/
     private Board board;
@@ -27,16 +32,13 @@ public class BoardController implements Cloneable{
     /** Se o jogador ganhou*/
     private boolean isUserWon;
 
-    /** Cor da peca do usuario*/
-    private final PieceColor USER_COLOR;
-
     /**
-     * Cria objeto de BoardController.
+     * Cria objeto de BoardController com um novo tabuleiro.
      *
      * @param isUserStarts Se o usuario que vai comecar
      * @param USER_COLOR Cor da peca do usuario
      */
-    public BoardController(boolean isUserStarts, PieceColor USER_COLOR){
+    public BoardController(PieceColor USER_COLOR, boolean isUserStarts){
         board = new Board();
         this.isUserTurn = isUserStarts;
         this.isUserWon = false;
@@ -46,20 +48,18 @@ public class BoardController implements Cloneable{
 
     /**
      * Tenta movimentar a peca de uma dada posicao para outra.
+     * Se aplicar e um peao nao chegou no final entao adiciona backup.
      *
-     * @param isUser Se eh o usuario movimenntando a peca
-     * @param fromLine Posicao da linha de origem
-     * @param fromColumn Posicao da coluna de origem
-     * @param toLine Posicao da linha de destino
-     * @param toColumn Posicao da linha de destino
+     * @param isUser Se eh o usuario movimentando a peca
+     * @param move Movimentacao para aplicar no tabuleiro
      * @return Se deu certo movimentar a peca
      */
-    public boolean move(boolean isUser, int fromLine, int fromColumn, int toLine, int toColumn){
+    public boolean makeMove(boolean isUser, Move move){
 
-        boolean isAnyoneWon = isUserWon || isAIWon;
+        boolean isNotAnyoneWon = !(isUserWon || isAIWon);
 
-        if(!isAnyoneWon && !hasPawnOnFinal()){
-            Piece fromPiece = board.getPiece(fromLine, fromColumn);
+        if(isNotAnyoneWon && !verifyPawnPromote()){
+            Piece fromPiece = board.getPiece(move.FROM);
 
             boolean isUserMove = isUser && isUserTurn
                                 && fromPiece.getColor() == USER_COLOR;
@@ -69,18 +69,25 @@ public class BoardController implements Cloneable{
 
             if((isUserMove || isAIMove)) {
 
-                if(applyCastling(fromLine, fromColumn, toLine, toColumn)) return true;
+                if(applyCastling(move)) return true;
 
-                else if(fromPiece.isValidMove(board, fromLine, fromColumn, toLine, toColumn)){
+                else if(fromPiece.isValidMove(board, move)){
                     addBackup();
 
                     fromPiece.setHasMoved(true);
-                    board.removePiece(toLine, toColumn);
-                    board.switchPieces(fromLine, fromColumn, toLine, toColumn);
+                    board.removePiece(move.TO);
+                    board.switchPieces(move.FROM, move.TO);
+
+                    if(verifyPawnPromote()){
+                        returnBackup();
+                        fromPiece.setHasMoved(true);
+                        board.removePiece(move.TO);
+                        board.switchPieces(move.FROM, move.TO);
+                    }
 
                     verifyWin();
 
-                    if(!hasPawnOnFinal()) changeTurn();
+                    if(!verifyPawnPromote()) changeTurn();
 
                     return true;
                 }
@@ -90,47 +97,48 @@ public class BoardController implements Cloneable{
     }
 
     /**
-     * Verifica e aplica caso possivel o movimento de castling
+     * Verifica e aplica caso possivel o movimento de castling.
+     * Se aplicar entao adiciona backup e troca o turno.
+     * Tomar cuidado pois nao verifica quem esta realizando o movimento.
      *
-     * @param fromLine Posicao da linha de inicio
-     * @param fromColumn Posicao da coluna de inicio
-     * @param toLine Posicao da linha de "destino"
-     * @param toColumn Posicao da coluna de "destino"
+     * @param move Movimento para verificar e aplicar
      * @return Se aplicou o castling
      */
-    private boolean applyCastling(int fromLine, int fromColumn, int toLine, int toColumn) {
-        Piece fromPiece = board.getPiece(fromLine, fromColumn);
+    private boolean applyCastling(Move move) {
+        Piece fromPiece = board.getPiece(move.FROM);
 
-        if(fromPiece != null && fromPiece.isCastlingMove(board, fromLine, fromColumn, toLine, toColumn)) {
+        if(fromPiece != null && fromPiece.isCastlingMove(board, move)) {
             addBackup();
 
-            int horizontalDistance = fromColumn - toColumn;
+            int horizontalDistance = move.FROM.COLUMN - move.TO.COLUMN;
 
             if (fromPiece instanceof King) {
                 boolean isRight = horizontalDistance < 0;
                 if (isRight) {
-                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn + 2);
-                    board.switchPieces(toLine, toColumn, toLine, toColumn - 2);
+                    board.switchPieces(move.FROM, new Position(move.FROM.LINE, move.FROM.COLUMN + 2));
+                    board.switchPieces(move.TO, new Position(move.TO.LINE, move.TO.COLUMN - 2));
                 } else {
-                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn - 2);
-                    board.switchPieces(toLine, toColumn, toLine, toColumn + 3);
+                    board.switchPieces(move.FROM, new Position(move.FROM.LINE, move.FROM.COLUMN - 2));
+                    board.switchPieces(move.TO, new Position(move.TO.LINE, move.TO.COLUMN + 3));
                 }
 
             }
             else{ //if (fromPiece instanceof Rook)
                 boolean isRight = horizontalDistance > 0;
                 if (isRight) {
-                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn - 2);
-                    board.switchPieces(toLine, toColumn, toLine, toColumn + 2);
+                    board.switchPieces(move.FROM, new Position(move.FROM.LINE, move.FROM.COLUMN - 2));
+                    board.switchPieces(move.TO, new Position(move.TO.LINE, move.TO.COLUMN + 2));
                 } else {
-                    board.switchPieces(fromLine, fromColumn, fromLine, fromColumn + 3);
-                    board.switchPieces(toLine, toColumn, toLine, toColumn - 2);
+                    board.switchPieces(move.FROM, new Position(move.FROM.LINE, move.FROM.COLUMN + 3));
+                    board.switchPieces(move.TO, new Position(move.TO.LINE, move.TO.COLUMN - 2));
                 }
             }
 
-            Piece toPiece = board.getPiece(toLine, toColumn);
+            Piece toPiece = board.getPiece(move.TO);
             fromPiece.setHasMoved(true);
             toPiece.setHasMoved(true);
+
+            changeTurn();
 
             return true;
         }
@@ -139,24 +147,28 @@ public class BoardController implements Cloneable{
 
     /**
      * Troca o peao que chegou no final do tabuleiro por um novo tipo de peca.
+     * Se conseguir mudar cria backup e troca o turno.
      *
      * @param isUser Se eh o usuario
      * @param newType Tipo da peca para colocar no lugar do peao
      * @return Se a troca foi realizada
      */
-    public boolean changePawnType(boolean isUser, PieceType newType){
-        if(hasPawnOnFinal() && (isUser && isUserTurn) || (!isUser && !isUserTurn)){
+    public boolean makePawnPromote(boolean isUser, PieceType newType){
+        if(verifyPawnPromote() && (isUser && isUserTurn) || (!isUser && !isUserTurn)){
             // pega posicao da linha que vai procurar o peao
             int line;
             if(isUser) line = getFinalLineOf(USER_COLOR);
             else line = getFinalLineOf(PieceColor.getOpponentOf(USER_COLOR));
 
             for(int column = 0; column < 8; column++){
-                Piece pieceOnFinal = board.getPiece(line, column);
+                Position position = new Position(line, column);
+                Piece pieceOnFinal = board.getPiece(position);
 
                 if(pieceOnFinal instanceof Pawn){
+                    addBackup();
+
                     // insere nova peca selecionada no lugar do peao
-                    board.setPiece(newType, pieceOnFinal.getColor(), line, column, pieceOnFinal.hasMoved());
+                    board.setPiece(newType, pieceOnFinal.getColor(), pieceOnFinal.hasMoved(), position);
 
                     changeTurn();
 
@@ -174,14 +186,15 @@ public class BoardController implements Cloneable{
      *
      * @return Se algum peao chegou no final do tabuleiro.
      */
-    public boolean hasPawnOnFinal(){
+    public boolean verifyPawnPromote(){
         PieceColor[] colors = {USER_COLOR, PieceColor.getOpponentOf(USER_COLOR)};
 
         for(PieceColor color : colors) {
             int line = getFinalLineOf(color);
             for(int column = 0; column < 8; column++) {
+                Position position = new Position(line, column);
 
-                Piece piece = board.getPiece(line, column);
+                Piece piece = board.getPiece(position);
                 if(piece instanceof Pawn){
                     return true;
                 }
@@ -241,7 +254,8 @@ public class BoardController implements Cloneable{
         // percorre posicoes do tabuleiro
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
-                Piece piece = board.getPiece(i, j);
+                Position position = new Position(i, j);
+                Piece piece = board.getPiece(position);
                 // se a peca for o rei e da cor aliada
                 if(piece instanceof King && piece.getColor() == color){
                     // rei nao morreu
@@ -264,11 +278,11 @@ public class BoardController implements Cloneable{
         // pecorrendo possicoes do tabuleiro
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
-                Piece piece = board.getPiece(i, j);
-                // se for o rei da cor procurada
+                Position position = new Position(i, j);
+                Piece piece = board.getPiece(position);
+
                 if(piece instanceof King && piece.getColor() == color){
-                    // se a posicao for perigosa em que o rei esta
-                    if(board.isDungerousPosition(color, i, j)){
+                    if(board.isDungerousPosition(color, position)){
                         // xeque mate
                         return true;
                     }
@@ -285,7 +299,7 @@ public class BoardController implements Cloneable{
      */
     private void addBackup(){
         BoardController backup = clone();
-        backups.add(backup);
+        BACKUPS.add(backup);
     }
 
 
@@ -297,9 +311,9 @@ public class BoardController implements Cloneable{
      */
     public boolean returnBackup(){
         // se existir backups anteriores
-        if(backups.size() > 0){
+        if(BACKUPS.size() > 0){
 
-            BoardController last = backups.get(backups.size()-1);
+            BoardController last = BACKUPS.get(BACKUPS.size()-1);
 
             this.board = last.board;
             this.isUserTurn = last.isUserTurn;
@@ -307,7 +321,7 @@ public class BoardController implements Cloneable{
             this.isUserWon = last.isUserWon;
 
             // deleta ultimo backup da lista de backups
-            backups.remove(last);
+            BACKUPS.remove(last);
 
             // backup realizado
             return true;
@@ -320,25 +334,25 @@ public class BoardController implements Cloneable{
     /**
      * Pega o tipo da peca de uma determinada posicao do tabuleiro.
      *
-     * @param line Posicao da linha da peca
-     * @param column Posicao da coluna da peca
-     * @return Tipo da peca
+     * @param position Posicao no tabuleiro
+     * @return Tipo da peca. Se nao existir entao null
      */
-    public PieceType getTypeOf(int line, int column){
-        Piece piece = board.getPiece(line, column);
-        return piece.getType();
+    public PieceType getTypeOf(Position position){
+        Piece piece = board.getPiece(position);
+        if (piece != null) return piece.getType();
+        else return null;
     }
 
     /**
      * Pega a cor da peca de uma determinada posicao do tabuleiro.
      *
-     * @param line Posicao da linha da peca
-     * @param column Posicao da coluna da peca
-     * @return Cor da peca
+     * @param position Posicao no tabuleiro
+     * @return Cor da peca. Se nao existir entao null
      */
-    public PieceColor getColorOf(int line, int column){
-        Piece piece = board.getPiece(line, column);
-        return piece.getColor();
+    public PieceColor getColorOf(Position position){
+        Piece piece = board.getPiece(position);
+        if (piece != null) return piece.getColor();
+        else return null;
     }
 
     /**

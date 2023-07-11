@@ -2,6 +2,7 @@ package com.chess_AI.model.chess.Piece;
 
 import com.chess_AI.model.chess.Board;
 import com.chess_AI.util.PieceType;
+import com.chess_AI.util.Move;
 
 /**
  * Esta classe representa uma posicao vazia do tabuleiro.
@@ -16,7 +17,7 @@ public class NullPiece extends Piece{
     }
 
     @Override
-    public boolean isValidMove(Board board, int fromLine, int fromColumn, int toLine, int toColumn) {
+    public boolean isValidMove(Board board, Move move) {
         return false;
     }
 }

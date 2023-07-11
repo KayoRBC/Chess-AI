@@ -10,39 +10,31 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Esta classe representa um controller para carregar as imagens de src, possui funcoes para carregamento dessas imagens
+ * Esta interface representa um controller para carregar as imagens de src, possui funcoes para carregamento dessas imagens.
  */
-public abstract class ImageController {
+public interface ImageController {
 
     /**
-     * Carrega e retorna uma matriz de imagens que representa o fundo do tabuleiro de xadrez
+     * Carrega e retorna uma matriz de imagens que representa o fundo do tabuleiro de xadrez.
      *
-     * @return Uma matriz de imagens
+     * @return Uma matriz de imagens com o fundo do tabuleiro.
      */
     public static BufferedImage[][] loadBackground(){
-        // matriz que vai armazenar as imagens de fundo
-        BufferedImage[][] board = new BufferedImage[8][8];
+        BufferedImage[][] background = new BufferedImage[8][8];
 
-        // variavel que representa se a posicao do fundo eh escura
-        boolean isDark = false;
+        boolean isDark = false; // variavel para dizer se a posicao do fundo eh escura ou nao
 
-        // pecorre posicoes do tabuleiro
+        // pecorre posicoes do tabuleiro para inserir as imagens em background
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
                 try {
                     // pega caminho de uma imagem de uma certa posicao do fundo
                     URL path;
-                    // se escuro
-                    if(isDark){
-                        path = BoardPanel.class.getResource("/images/background/square_dark_brown.png");
-                    }
-                    // se claro
-                    else{
-                        path = BoardPanel.class.getResource("/images/background/square_light_brown.png");
-                    }
+                    if(isDark) path = BoardPanel.class.getResource("/images/background/square_dark_brown.png");
+                    else path = BoardPanel.class.getResource("/images/background/square_light_brown.png");
 
                     // carrega imagem e insere na matriz
-                    board[i][j] = ImageIO.read(path);
+                    background[i][j] = ImageIO.read(path);
 
                     // troca tonalidade
                     isDark = !isDark;
@@ -54,18 +46,16 @@ public abstract class ImageController {
             // troca tonalidade
             isDark = !isDark;
         }
-
-        // retorna matriz com as imagens carregadas
-        return board;
+        return background;
     }
 
 
     /**
-     * Carrega e retorna a imagem de uma repectiva peca e cor
+     * Carrega e retorna a imagem de uma repectiva peca e cor.
      *
      * @param type Tipo da peca
      * @param pieceColor Cor da peca
-     * @return Imagem da peca (se for NullPiece entao retorna null)
+     * @return Imagem da peca (se for NullPiece ou nao existir entao retorna null)
      */
     public static BufferedImage loadPiece(PieceType type, PieceColor pieceColor){
         // converte a cor da peca em uma string
@@ -93,9 +83,9 @@ public abstract class ImageController {
     }
 
     /**
-     * Carrega a imagem de uma peca de acordo com o nome do arquivo
+     * Carrega uma imagem que esta no diretorio src/images/pieces.
      *
-     * @param pieceNamePng Nome do arquivo que contem a imagem
+     * @param pieceNamePng Nome do arquivo para carregar.
      * @return Imagem carregada (se nao existir entao retorna null)
      */
     private static BufferedImage loadPiece(String pieceNamePng){
