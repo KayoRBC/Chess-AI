@@ -48,9 +48,6 @@ public class BoardPanel extends JPanel{
         this.USER_COLOR = userColor;
         this.WINDOW = window;
 
-        // define a direcao do tabuleiro para ser mostrado
-        if(USER_COLOR == PieceColor.WHITE) PieceColor.setIsWhiteUp(false);
-
         // cria boardController
         BOARD_CONTROLLER = new BoardController(USER_COLOR);
 
@@ -238,8 +235,8 @@ public class BoardPanel extends JPanel{
      */
     private void drawBoard(Graphics2D g2){
         // define tamanho das imagens
-        int width = getWidth() / 8;
-        int height = getHeight() / 8;
+        int width = Math.round(getWidth() / 8.0f);
+        int height = Math.round(getHeight() / 8.0f);
 
         BufferedImage[][] background = ImageController.loadBackground();
         for(int i = 0; i < background.length; i++){
@@ -256,8 +253,8 @@ public class BoardPanel extends JPanel{
      */
     private void drawPieces(Graphics2D g2){
         // define tamanho das pecas
-        int width = getWidth() / 8;
-        int height = getHeight() / 8;
+        int width = Math.round(getWidth() / 8.0f);
+        int height = Math.round(getHeight() / 8.0f);
 
         // percorre posicoes do tabuleiro
         for(int i = 0; i < 8; i++){
