@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Esta interface representa um controller para carregar as imagens de src, possui funcoes para carregamento dessas imagens.
+ * Esta interface representa um controller para carregar as imagens de src.
  */
 public interface ImageController {
 
@@ -53,9 +53,9 @@ public interface ImageController {
     /**
      * Carrega e retorna a imagem de uma repectiva peca e cor.
      *
-     * @param type Tipo da peca
-     * @param pieceColor Cor da peca
-     * @return Imagem da peca (se for NullPiece ou nao existir entao retorna null)
+     * @param type Tipo da peca.
+     * @param pieceColor Cor da peca.
+     * @return Imagem da peca (se for NullPiece ou nao existir entao retorna null).
      */
     public static BufferedImage loadPiece(PieceType type, PieceColor pieceColor){
         // converte a cor da peca em uma string
@@ -86,7 +86,7 @@ public interface ImageController {
      * Carrega uma imagem que esta no diretorio src/images/pieces.
      *
      * @param pieceNamePng Nome do arquivo para carregar.
-     * @return Imagem carregada (se nao existir entao retorna null)
+     * @return Imagem carregada (se nao existir entao retorna null).
      */
     private static BufferedImage loadPiece(String pieceNamePng){
         // pega caminho da imagem

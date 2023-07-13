@@ -11,7 +11,7 @@ public enum PieceType {
     /**
      * Retorna um tipo de peca aleatorio, podendendo ate ser uma vazia(NULL).
      *
-     * @return Tipo de peca
+     * @return Tipo de peca.
      */
     public static PieceType getRand(){
         Random random = new Random();

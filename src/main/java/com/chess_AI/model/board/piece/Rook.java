@@ -1,22 +1,21 @@
-package com.chess_AI.model.chess.Piece;
+package com.chess_AI.model.board.piece;
 
-import com.chess_AI.model.chess.Board;
+import com.chess_AI.model.board.Board;
 import com.chess_AI.util.PieceColor;
-import com.chess_AI.util.PieceType;
 import com.chess_AI.util.Move;
 
 /**
- * Esta classe representa a peca da torre, possui as regras de movimentacao e o estado da peca.
+ * Esta classe representa a peca da torre.
  */
 public class Rook extends Piece{
 
     /**
-     * Cria e retorna uma torre de uma determinada cor.
+     * Cria e retorna objeto de Rook.
      *
-     * @param color Cor da torre
+     * @param color Cor da torre.
      */
     public Rook(PieceColor color) {
-        super(color, PieceType.ROOK);
+        super(color);
     }
 
     @Override
@@ -27,8 +26,8 @@ public class Rook extends Piece{
         return fromPiece instanceof Rook
                 && toPiece != null
                 && fromPiece.getColor() != toPiece.getColor()
-                && (isHorizontalValid(board, move)
-                    || isVerticalValid(board, move));
+                && (hasNotHorizontalIntermediaries(board, move)
+                    || hasNotVerticalIntermediaries(board, move));
 
     }
 }

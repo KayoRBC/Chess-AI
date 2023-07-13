@@ -18,19 +18,19 @@ import java.awt.image.BufferedImage;
  */
 public class WonLabel extends JLabel{
 
-    /** Panel onde BoardPanel esta incluso*/
+    /** Panel onde BoardPanel esta incluso.*/
     private final JPanel window;
 
-    /** BoardPanel onde esse objeto vai ser incluso*/
+    /** BoardPanel onde esse objeto vai ser incluso.*/
     private final BoardPanel BOARD_PANEL;
 
     /**
      * Cria objeto de WinLabel.
      *
-     * @param isUserWon Se o jogador venceu
-     * @param userColor Cor do jogador
-     * @param window Janela em que boardPamel esta, deve ter layout CardLayout
-     * @param boardPanel Janela em que WinLabel vai ser incluso
+     * @param isUserWon Se o jogador venceu.
+     * @param userColor Cor do jogador.
+     * @param window Janela em que boardPamel esta, deve ter layout CardLayout.
+     * @param boardPanel Janela em que WinLabel vai ser incluso.
      */
     public WonLabel(boolean isUserWon, PieceColor userColor, JPanel window, BoardPanel boardPanel){
         //SCREEN_SIZE = screenSize;
@@ -55,23 +55,14 @@ public class WonLabel extends JLabel{
     /**
      * Cria e retorna Label com a imagem de uma peca do rei, texto de vitoria e o botao para retornar a tela inicial.
      *
-     * @param width Tamanho do Label
-     * @param height Altura do Label
-     * @param isUserWon Se o jogador venceu
-     * @param userColor Cor do jogador
+     * @param width Tamanho do Label.
+     * @param height Altura do Label.
+     * @param isUserWon Se o jogador venceu.
+     * @param userColor Cor do jogador.
      * @return Label com os componentes inclusos.
      */
     private JLabel createLabel(int width, int height, boolean isUserWon, PieceColor userColor){
-        JLabel win = new JLabel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-
-                // adiciona cor de fundo
-                g.setColor(Color.GRAY);
-                g.fillRect(0, 0, getWidth(), getHeight());
-            }
-        };
+        JLabel win = new JLabel();
 
         // define tamanho de win
         Dimension size = new Dimension(width, height);
@@ -110,10 +101,10 @@ public class WonLabel extends JLabel{
      * Cria e retorna uma label com a imagem do rei dentro.
      * A cor do rei depende de quem venceu a partida.
      *
-     * @param imageSize Tamanho da imagem/label
-     * @param isUserWon Se o jogador venceu
-     * @param userColor Cor do usuario
-     * @return Label com a imagem da peca do rei
+     * @param imageSize Tamanho da imagem/label.
+     * @param isUserWon Se o jogador venceu.
+     * @param userColor Cor do usuario.
+     * @return Label com a imagem da peca do rei.
      */
     private JLabel createKingLabel(int imageSize, boolean isUserWon, PieceColor userColor){
         JLabel imageLabel = new JLabel(); // label que vai ser inserida a imagem
@@ -140,16 +131,22 @@ public class WonLabel extends JLabel{
     /**
      * Cria e retorna o texto de vitoria dependendo de quem venceu.
      *
-     * @param isUserWon Se o jogador venceu
-     * @param fontSize Tamanho da fonte do texto
+     * @param isUserWon Se o jogador venceu.
+     * @param fontSize Tamanho da fonte do texto.
      * @return Label com o texto de vitoria.
      */
     private JLabel createWonText(boolean isUserWon, int fontSize){
         JLabel text = new JLabel();
 
         // define texto de vitoria
-        if(isUserWon) text.setText("USER WON");
-        else text.setText("AI WON");
+        if(isUserWon){
+            text.setText("USER WON");
+            text.setForeground(Color.GREEN);
+        }
+        else{
+            text.setText("AI WON");
+            text.setForeground(Color.RED);
+        }
 
         // define a fonte do texto
         Font font = new Font(text.getFont().getName(), Font.BOLD, fontSize);
@@ -161,9 +158,9 @@ public class WonLabel extends JLabel{
     /**
      * Cria e retorna o botao com funcao para retornar a tela inicial.
      *
-     * @param width Largura do botao
-     * @param height Altura do botao
-     * @return O botao
+     * @param width Largura do botao.
+     * @param height Altura do botao.
+     * @return O botao.
      */
     private JButton createReturnButton(int width, int height){
         JButton returnButton = new JButton("RETURN");

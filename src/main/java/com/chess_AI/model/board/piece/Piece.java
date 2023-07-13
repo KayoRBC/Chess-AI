@@ -1,54 +1,46 @@
-package com.chess_AI.model.chess.Piece;
+package com.chess_AI.model.board.piece;
 
-import com.chess_AI.model.chess.Board;
+import com.chess_AI.model.board.Board;
 import com.chess_AI.util.PieceColor;
-import com.chess_AI.util.PieceType;
 import com.chess_AI.util.Functions;
 import com.chess_AI.util.Move;
 import com.chess_AI.util.Position;
 
 /**
- * Esta classe abstrata possui os atributos gerais de uma peca e funcoes para serem utilizadas na verificacao
- * de movimentacao.
+ * Esta classe abstrata possui os atributos gerais para uma peca de xadrez.
  */
 public abstract class Piece implements Cloneable{
 
-    /** Cor da peca*/
+    /** Cor da peca.*/
     protected final PieceColor COLOR;
 
-    /** Tipo da peca*/
-    protected final PieceType TYPE;
-
-    /** Se foi movimentada alguma vez durante o jogo*/
+    /** Se foi movimentada alguma vez durante o jogo.*/
     protected boolean hasMoved = false;
 
     /**
      * Contrutor para ser chamado nas classes filhas.
      *
-     * @param color Cor da peca
-     * @param pieceType Tipo da peca
+     * @param color Cor da peca.
      */
-    public Piece(PieceColor color, PieceType pieceType){
+    public Piece(PieceColor color){
         this.COLOR = color;
-        this.TYPE = pieceType;
     }
 
     /**
-     * Verifica se pode realizar o movimento de uma posicao origem ate uma posicao destino de acordo com
-     * as regras da peca.
+     * Verifica se a peca pode realizar um movimento no tabuleiro.
      * Nao verifica movimento de castling.
      *
-     * @param board Tabuleiro para verificar
-     * @param move Movimento para verificar
-     * @return Se eh possivel realizar o movimento de acordo com as regras da peca
+     * @param board Tabuleiro para verificar.
+     * @param move Movimento para verificar.
+     * @return Se eh possivel realizar o movimento de acordo com as regras da peca.
      */
     public abstract boolean isValidMove(Board board, Move move);
 
     /**
      * Verifica se o movimento eh de castling e pode ser aplicado no tabuleiro.
      *
-     * @param board Tabuleiro para verificar
-     * @param move Movimento para verificar
+     * @param board Tabuleiro para verificar.
+     * @param move Movimento para verificar.
      * @return Se eh possivel realizar o movimento de castling.
      */
     public boolean isCastlingMove(Board board, Move move){
@@ -64,7 +56,7 @@ public abstract class Piece implements Cloneable{
                 boolean sameColor = fromPiece.getColor() == toPiece.getColor();
                 boolean hasNotMoved = !fromPiece.hasMoved() && !toPiece.hasMoved();
 
-                if (sameColor && hasNotMoved && isHorizontalValid(board, move)) {
+                if (sameColor && hasNotMoved && hasNotHorizontalIntermediaries(board, move)) {
                     PieceColor allyColor = fromPiece.getColor();
                     return (board.isSafeLine(move.FROM.LINE, move.FROM.COLUMN, move.TO.COLUMN, allyColor));
                 }
@@ -83,15 +75,6 @@ public abstract class Piece implements Cloneable{
     }
 
     /**
-     * Retorna o tipo da peca.
-     *
-     * @return Tipo da peca.
-     */
-    public PieceType getType() {
-        return TYPE;
-    }
-
-    /**
      * Retorna se a peca ja foi movimentada.
      *
      * @return Se ja foi movimentada.
@@ -101,7 +84,7 @@ public abstract class Piece implements Cloneable{
     }
 
     /**
-     * Atualiza se a peca ja foi movimentada com o parametro passado.
+     * Atualiza se a peca ja foi movimentada.
      *
      * @param hasMoved Se a peca ja foi movimentada.
      */
@@ -120,75 +103,75 @@ public abstract class Piece implements Cloneable{
     }
 
     /**
-     * Verifica se o movimento eh na vertical e se nao existem pecas intermediarias.
-     * Se as posicoes nao existirem vai considerar como se fosse uma NullPiece.
-     * Nao verifica se as posicoes de origem e destino do movimento existem.
+     * Verifica se o movimento eh na vertical e nao existem pecas intermediarias.
+     * Se as posicoes intermediarias nao existirem vai considerar como se fossem vazias.
+     * Nao verifica se as pecas nas posicoes de origem e destino no tabuleiro existem.
      *
-     * @param board Tabuleiro para verificar
-     * @param move Movimento para verificar
-     * @return Se movimento eh na vertical e nao existem pecas intermediarias.
+     * @param board Tabuleiro para verificar.
+     * @param move Movimento para verificar.
+     * @return Se o movimento eh na vertical e nao existem pecas intermediarias.
      */
-    protected boolean isVerticalValid(Board board, Move move){
+    protected boolean hasNotVerticalIntermediaries(Board board, Move move){
         int verticalDistance = Math.abs(move.FROM.LINE - move.TO.LINE);
         int horizontalDistance = Math.abs(move.FROM.COLUMN - move.TO.COLUMN);
 
         boolean isVerticalMove = horizontalDistance == 0 && verticalDistance > 0;
         if(isVerticalMove) {
 
-            // verifica se nao tem pecas intermediarias
+            // verifica se nao possui pecas intermediarias
             int[] lines = Functions.createIntermediateValues(move.FROM.LINE, move.TO.LINE);
             if(lines != null){
                 for(int line: lines){
                     Position position = new Position(line, move.FROM.COLUMN);
                     Piece piece = board.getPiece(position);
-                    if(piece != null && !(piece instanceof NullPiece)) return false;
+                    if(piece != null && !(piece instanceof Null)) return false; // existe intermediario
                 }
             }
-            return true;
+            return true; // nao existem intermedirios
         }
-        return false;
+        return false; // movimento nao eh na vertical
     }
 
     /**
      * Verifica se o movimento eh na horizontal e se nao existem pecas intermediarias.
-     * Se as posicoes nao existirem vai considerar como se fosse uma NullPiece.
-     * Nao verifica se as posicoes de origem e destino do movimento existem.
+     * Se as posicoes intermediarias nao existirem vai considerar como se fossem vazias.
+     * Nao verifica se as pecas nas posicoes de origem e destino no tabuleiro existem.
      *
-     * @param board Tabuleiro para verificar
-     * @param move Movimento para verificar
-     * @return Se movimento eh na horizontal e nao existem pecas intermediarias.
+     * @param board Tabuleiro para verificar.
+     * @param move Movimento para verificar.
+     * @return Se o movimento eh na horizontal e nao existem pecas intermediarias.
      */
-    protected boolean isHorizontalValid(Board board, Move move){
+    protected boolean hasNotHorizontalIntermediaries(Board board, Move move){
         int verticalDistance = Math.abs(move.FROM.LINE - move.TO.LINE);
         int horizontalDistance = Math.abs(move.FROM.COLUMN - move.TO.COLUMN);
 
         boolean isHorizontalMove = verticalDistance == 0 && horizontalDistance > 0;
         if(isHorizontalMove) {
 
-            // verifica se nao tem pecas intermediarias
+            // verifica se nao possui pecas intermediarias
             int[] columns = Functions.createIntermediateValues(move.FROM.COLUMN, move.TO.COLUMN);
             if(columns != null){
                 for(int column: columns){
                     Position position = new Position(move.FROM.LINE, column);
                     Piece piece = board.getPiece(position);
-                    if(piece != null && !(piece instanceof NullPiece)) return false;
+                    if(piece != null && !(piece instanceof Null)) return false; // existe intermediario
                 }
             }
-            return true;
+            return true; // nao existem intermediarios
         }
-        return false;
+        return false; // movimento nao eh na horizontal
     }
 
     /**
      * Verifica se o movimento eh na diagonal e se nao existem pecas intermediarias.
-     * Se as posicoes nao existirem vai considerar como se fosse uma NullPiece.
-     * Nao verifica se as posicoes de origem e destino do movimento existem.
+     * Se as posicoes intermediarias nao existirem vai considerar como se fossem vazias.
+     * Nao verifica se as pecas nas posicoes de origem e destino no tabuleiro existem.
      *
-     * @param board Tabuleiro para verificar
-     * @param move Movimento para verificar
+     * @param board Tabuleiro para verificar.
+     * @param move Movimento para verificar.
      * @return Se movimento eh na diagonal e nao existem pecas intermediarias.
      */
-    protected boolean isDiagonalValid(Board board, Move move) {
+    protected boolean hasNotDiagonalIntermediaries(Board board, Move move) {
         int verticalDistance = Math.abs(move.FROM.LINE - move.TO.LINE);
         int horizontalDistance = Math.abs(move.FROM.COLUMN - move.TO.COLUMN);
 
@@ -205,11 +188,11 @@ public abstract class Piece implements Cloneable{
                     int column = columns[i];
                     Position position = new Position(line, column);
                     Piece piece = board.getPiece(position);
-                    if (piece != null && !(piece instanceof NullPiece)) return false;
+                    if (piece != null && !(piece instanceof Null)) return false; // existe intermediario
                 }
             }
-            return true;
+            return true; // nao existem intermediarios
         }
-        return false;
+        return false; // movimento nao eh na diagonal
     }
 }

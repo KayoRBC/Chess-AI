@@ -18,19 +18,19 @@ import java.awt.image.BufferedImage;
  */
 public class InitialScreen extends JPanel {
 
-    /** Altura da janela*/
+    /** Altura da janela.*/
     private final int SCREEN_SIZE;
 
-    /** Painel que armazena esse panel*/
+    /** Painel que armazena esse panel.*/
     private final JPanel PRINCIPAL_PANEL;
 
-    /** Cor selecionada pelo usuario*/
+    /** Cor selecionada pelo usuario.*/
     private PieceColor selectedColor = null;
 
     /**
      * Cria e retorna objeto de InitialScreen.
      *
-     * @param screenSize Tamanho da tela (screenSize X screenSize)
+     * @param screenSize Tamanho da tela (screenSize X screenSize).
      * @param principalPanel Tela principal onde vai ser inserido esse objeto.
      */
     public InitialScreen(int screenSize, JPanel principalPanel){
@@ -127,9 +127,9 @@ public class InitialScreen extends JPanel {
      * Cria e retorna um botao com a imagem de uma peca e sem nenhum action listener.
      * O fundo nao esta desenhado e esta definido para ser vermelho.
      *
-     * @param size Tamanho do botao
-     * @param type Tipo da peca
-     * @param color Cor da peca
+     * @param size Tamanho do botao.
+     * @param type Tipo da peca.
+     * @param color Cor da peca.
      * @return O botao.
      */
     private JButton createColorButton(Dimension size, PieceType type, PieceColor color){

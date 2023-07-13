@@ -10,17 +10,17 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * Esta interface representa a estategia de busca AlphaBeta para um tabuleiro de xadrez.
+ * Esta interface representa o algoritmo de busca Alpha-Beta para um tabuleiro de xadrez.
  */
 public interface AlphaBeta {
 
     /**
      * Busca e retorna a melhor movimento esperado em um tabuleiro.
      *
-     * @param AIColor Cor da peca da IA
-     * @param boardController  Tabuleiro atual para fazer a busca
-     * @param maxDepth Maxima profundidade de busca
-     * @param isMax Se quer procurar o movimento esperado que maximize seus ganhos
+     * @param AIColor Cor da peca da IA.
+     * @param boardController  Controller do tabuleiro para realizar a busca.
+     * @param maxDepth Maxima profundidade de busca.
+     * @param isMax Se quer procurar o movimento esperado que maximize seus ganhos.
      * @return A melhor jogada encontrada. Se nao encontrar retorna null.
      */
     static Move search(PieceColor AIColor, BoardController boardController, int maxDepth, boolean isMax){
@@ -34,17 +34,16 @@ public interface AlphaBeta {
     }
 
     /**
-     * Faz busca alpha beta recursivo.
+     * Faz busca Alpha-Beta recursivo.
      *
-     * @param current Node atual
-     * @param maxDepth Profundidade maxima
-     * @param currentDepth Profundidade atual
-     * @param alpha Valor de alpha
-     * @param beta Valor de beta
-     * @param isMax Se busca maximizar a heuristica
-     * @param AIColor Cor da peca da IA
-     * @return Current com o melhor movimento registrado. Se nao conseguir encontrar entao nao vai mudar
-     * o movimento registrado.
+     * @param current Node atual.
+     * @param maxDepth Profundidade maxima.
+     * @param currentDepth Profundidade atual.
+     * @param alpha Valor de alpha.
+     * @param beta Valor de beta.
+     * @param isMax Se busca maximizar a heuristica.
+     * @param AIColor Cor da peca da IA.
+     * @return Node com a melhor heuristica encontrada. Na primeira profundidade o Node obtem a movimentacao do melhor filho.
      */
     private static Node alphaBeta(Node current, int maxDepth, int currentDepth,
                            double alpha, double beta, boolean isMax, PieceColor AIColor){
@@ -137,8 +136,8 @@ public interface AlphaBeta {
      * Cria os filhos do Node atual. Entretanto os filhos apenas possuem a movimentacao registrada.
      * Cria independentemente se for o turno da IA ou do usuario.
      *
-     * @param current Node atual
-     * @return Lista de filhos do node.
+     * @param current Node atual.
+     * @return Lista de filhos de Node.
      */
     private static Node[] generateChildrens(Node current){
         ArrayList<Node> childrens = new ArrayList<>();
@@ -177,8 +176,8 @@ public interface AlphaBeta {
     /**
      * Calcula e retorna a heuristica de um boardController para uma respectiva cor.
      *
-     * @param boardController Tabuleiro para calcular a heuristica
-     * @param color Cor para calcular a heuristica
+     * @param boardController Controller do tabuleiro para pegar as pecas.
+     * @param color Cor para calcular a heuristica.
      * @return O valor do resultado da heuristica, quanto maior melhor para a cor selecionada.
      */
     private static double getHeuristic(BoardController boardController, PieceColor color){
@@ -202,10 +201,10 @@ public interface AlphaBeta {
     }
 
     /**
-     * Pega o peso de uma peca de acordo com o tipo dela
+     * Pega o peso de uma peca de acordo com o tipo dela.
      *
-     * @param type Tipo da peca
-     * @return O peso da pesa
+     * @param type Tipo da peca.
+     * @return O peso da pesa.
      */
     private static double getWeight(PieceType type){
         return switch (type) {

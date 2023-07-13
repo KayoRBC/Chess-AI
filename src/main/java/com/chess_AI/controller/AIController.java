@@ -13,9 +13,9 @@ public interface AIController {
      * Faz a IA predizer a melhor jogada para um tabuleiro de xadrez utilizando AlphaBeta.
      * Usar quando for o turno da IA.
      *
-     * @param AIColor cor da peca da IA no tabuleiro de xadrez.
-     * @param boardController Tabuleiro para aplicar os movimentos
-     * @param maxDepth Maxima profundidade de busca do AlphaBeta
+     * @param AIColor Cor da peca da IA no tabuleiro de xadrez.
+     * @param boardController Tabuleiro para aplicar os movimentos.
+     * @param maxDepth Maxima profundidade de busca do AlphaBeta.
      *
      * @return A melhor jogada. Se nao encontrar retorna null.
      */

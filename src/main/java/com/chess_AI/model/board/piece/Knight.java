@@ -1,22 +1,21 @@
-package com.chess_AI.model.chess.Piece;
+package com.chess_AI.model.board.piece;
 
-import com.chess_AI.model.chess.Board;
+import com.chess_AI.model.board.Board;
 import com.chess_AI.util.PieceColor;
-import com.chess_AI.util.PieceType;
 import com.chess_AI.util.Move;
 
 /**
- * Esta classe representa a peca do cavalo, possui as regras de movimentacao e o estado da peca.
+ * Esta classe representa a peca do cavalo.
  */
 public class Knight extends Piece{
 
     /**
-     * Cria e retorna um cavalo de uma determinada cor.
+     * Cria e retorna um objeto de Knight.
      *
-     * @param color Cor do cavalo
+     * @param color Cor do cavalo.
      */
     public Knight(PieceColor color) {
-        super(color, PieceType.KNIGHT);
+        super(color);
     }
 
     @Override

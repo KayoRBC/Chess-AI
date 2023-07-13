@@ -5,19 +5,19 @@ package com.chess_AI.util;
  */
 public class Move {
 
-    /** Posicao de origem*/
+    /** Posicao de origem.*/
     public final Position FROM;
 
-    /** Posicao de destino*/
+    /** Posicao de destino.*/
     public final Position TO;
 
     /**
-     * Cria e retorna um objeto de Move
+     * Cria e retorna um objeto de Move.
      *
-     * @param fromLine Linha de origem
-     * @param fromColumn Coluna de origem
-     * @param toLine Linha de destino
-     * @param toColumn Coluna de destino
+     * @param fromLine Linha de origem.
+     * @param fromColumn Coluna de origem.
+     * @param toLine Linha de destino.
+     * @param toColumn Coluna de destino.
      */
     public Move(int fromLine, int fromColumn, int toLine, int toColumn){
         FROM = new Position(fromLine, fromColumn);
@@ -25,10 +25,10 @@ public class Move {
     }
 
     /**
-     * Cria e retorna um objeto de Move
+     * Cria e retorna um objeto de Move.
      *
-     * @param from Posicao de origem
-     * @param to Posicao de destino
+     * @param from Posicao de origem.
+     * @param to Posicao de destino.
      */
     public Move(Position from, Position to){
         FROM = from;

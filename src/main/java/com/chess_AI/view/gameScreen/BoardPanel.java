@@ -15,32 +15,33 @@ import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 
 /**
- * Esta classe representa o tabuleiro de xadrez visualmente, possui um PromoteSelector e um PositionSelector.
- * Caso alguem venca a partida mostra WonLabel.
+ * Esta classe representa o front-end do tabuleiro de xadrez. Utiliza PositionSelector, PromoteSelector e WonLabel para
+ * verificar e manipular as jogadas do Jogador e da IA. Alem disso, o historico da partida eh mostrado no terminal pelo
+ * History.
  */
 public class BoardPanel extends JPanel{
 
-    /** Cor da peca do jogador*/
+    /** Cor da peca do jogador.*/
     private final PieceColor USER_COLOR;
 
-    /** Controlador do tabuleiro para fazer as movimentacoes*/
+    /** Controlador do tabuleiro para fazer as movimentacoes.*/
     private final BoardController BOARD_CONTROLLER;
 
-    /** Responsavel pela selecao de posicao no tabuleiro*/
+    /** Responsavel pela selecao de posicao no tabuleiro.*/
     private final PositionSelector POSITION_SELECTOR;
 
-    /** Responsavel pela selecao de peca quando o peao do usuario chega no final do tabuleiro*/
+    /** Responsavel pela selecao de peca quando o peao do usuario chega no final do tabuleiro.*/
     private final PromoteSelector PROMOTE_SELECTOR;
 
-    /** Janela em que esse objeto esta sendo mostrada, deve possuir o layout CardLayout*/
+    /** Janela em que esse objeto esta sendo mostrado, deve possuir o layout CardLayout.*/
     private final JPanel WINDOW;
 
     /**
      * Cria e retorna objeto de BoardPanel. Quando criado, cria um tabuleiro com estado inicial para
      * o jogador e a IA jogarem.
      *
-     * @param screenSize Tamanho do tabuleiro (screenSize x screenSize)
-     * @param userColor Cor da peca do usuario
+     * @param screenSize Tamanho do tabuleiro (screenSize x screenSize).
+     * @param userColor Cor da peca do usuario.
      * @param window Janela em que esse objeto vai ser mostrado, deve possuir o layout CardLayout.
      */
     public BoardPanel(int screenSize, PieceColor userColor, JPanel window) {
@@ -51,8 +52,7 @@ public class BoardPanel extends JPanel{
         if(USER_COLOR == PieceColor.WHITE) PieceColor.setIsWhiteUp(false);
 
         // cria boardController
-        boolean isUserStarts = USER_COLOR == PieceColor.WHITE;
-        BOARD_CONTROLLER = new BoardController(USER_COLOR, isUserStarts);
+        BOARD_CONTROLLER = new BoardController(USER_COLOR);
 
         // define o tamanho da tela
         Dimension size = new Dimension(screenSize, screenSize);
@@ -81,7 +81,7 @@ public class BoardPanel extends JPanel{
                     History.printColor(false, PieceColor.getOpponentOf(USER_COLOR));
 
                     // se IA que comeca o jogo entao faz jogada da IA
-                    if(!isUserStarts) board.makeAIPlay();
+                    if(!BOARD_CONTROLLER.isUserTurn()) board.makeAIPlay();
                 }
             }
         });
@@ -93,7 +93,7 @@ public class BoardPanel extends JPanel{
      * e habilita a selecao de peca.
      * Se alguem vencer entao mostra wonLabel.
      *
-     * @param move Movimento para aplicar
+     * @param move Movimento para aplicar.
      * @return Se o jogador conseguir realizar a jogada, um peao nao chegou no final do tabuleiro
      * e alguem nao venceu entao retorna true.
      */
@@ -130,7 +130,7 @@ public class BoardPanel extends JPanel{
     }
 
     /**
-     * Mostra o seletor de peca no painel para selecionar uma peca quando um peao do usuario
+     * Mostra o seletor de peca no painel para selecionar uma peca quando um peao do usuario.
      * chegou no final do tabuleiro.
      * Desabilita position selector e habilita promote selector.
      */
@@ -234,7 +234,7 @@ public class BoardPanel extends JPanel{
     /**
      * Desenha o fundo do tabuleiro.
      *
-     * @param g2 Contexto para desenhar o fundo
+     * @param g2 Contexto para desenhar o fundo.
      */
     private void drawBoard(Graphics2D g2){
         // define tamanho das imagens
@@ -252,7 +252,7 @@ public class BoardPanel extends JPanel{
     /**
      * Desenha as pecas no tabuleiro de acordo com BOARD_CONTROLLER.
      *
-     * @param g2 Contexto para desenhar
+     * @param g2 Contexto para desenhar.
      */
     private void drawPieces(Graphics2D g2){
         // define tamanho das pecas

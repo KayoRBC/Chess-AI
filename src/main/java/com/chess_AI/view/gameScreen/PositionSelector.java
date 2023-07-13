@@ -10,23 +10,23 @@ import java.awt.event.ActionListener;
 
 /**
  * Esta classe representa os botoes para selecao de posicao no tabuleiro. Tambem tem a responsabilidade de
- * chamar as funcoes para realizar as jogadas do Jogador e da IA do BoardPanel.
+ * chamar as funcoes para realizar as jogadas do Jogador e da IA.
  */
 public class PositionSelector extends JLabel {
 
-    /** Primeira posicao selecionada*/
+    /** Primeira posicao selecionada.*/
     private Position first;
 
-    /** Segunda posicao selecionada*/
+    /** Segunda posicao selecionada.*/
     private Position second;
 
-    /** Panel onde esta desenhado o tabuleiro e possui as funcoes para jogar*/
+    /** Panel onde esta desenhado o tabuleiro e possui as funcoes para jogar.*/
     private final BoardPanel BOARD_PANEL;
 
     /**
      * Cria e retorna objeto de PositionSelector.
      *
-     * @param boardPanel Panel onde esta desenhado o tabuleiro
+     * @param boardPanel Panel onde esta desenhado o tabuleiro.
      */
     public PositionSelector(int screenSize, BoardPanel boardPanel){
         BOARD_PANEL = boardPanel;
@@ -104,8 +104,8 @@ public class PositionSelector extends JLabel {
      * a primeira posicao, segunda chamada para a segunda posicao. Alem disso, apenas eh atualizada
      * se alguma posicao estiver disponivel.
      *
-     * @param position Posicao para registrar
-     * @return Se foi possivel selecionar a posicao
+     * @param position Posicao para registrar.
+     * @return Se foi possivel selecionar a posicao.
      */
     private boolean selectPosition(Position position){
         // insere primeira posicao

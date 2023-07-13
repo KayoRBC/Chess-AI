@@ -1,22 +1,21 @@
-package com.chess_AI.model.chess.Piece;
+package com.chess_AI.model.board.piece;
 
-import com.chess_AI.model.chess.Board;
+import com.chess_AI.model.board.Board;
 import com.chess_AI.util.PieceColor;
-import com.chess_AI.util.PieceType;
 import com.chess_AI.util.Move;
 
 /**
- * Esta classe representa a peca do bispo, possui as regras de movimentacao e o estado da peca.
+ * Esta classe representa a peca do bispo.
  */
 public class Bishop extends Piece{
 
     /**
-     * Cria e retorna um bispo de uma determinada cor.
+     * Cria e retorna um objeto de Bishop.
      *
-     * @param color Cor do bispo
+     * @param color Cor do bispo.
      */
     public Bishop(PieceColor color) {
-        super(color, PieceType.BISHOP);
+        super(color);
     }
 
     @Override
@@ -27,6 +26,6 @@ public class Bishop extends Piece{
         return fromPiece instanceof Bishop
                 && toPiece != null
                 && toPiece.getColor() != fromPiece.getColor()
-                && isDiagonalValid(board, move);
+                && hasNotDiagonalIntermediaries(board, move);
     }
 }

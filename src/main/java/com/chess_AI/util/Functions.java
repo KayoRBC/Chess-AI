@@ -1,16 +1,16 @@
 package com.chess_AI.util;
 
 /**
- * Esta interface armazena as funcoes que nao estao associadas a nenhuma camada e podem ser utilizadas em qualquer camada do projeto
+ * Esta interface armazena as funcoes que podem ser utilizadas em qualquer camada do projeto.
  */
 public interface Functions {
 
     /**
      * Retorna um vetor com os valores intermediarios de um valor ate outro.
      *
-     * @param start Valor de inicio
-     * @param end Valor de fim
-     * @return Um vetor com os valores intermediarios, se nao existir retorna null
+     * @param start Valor de inicio (excluido).
+     * @param end Valor de fim (excluido).
+     * @return Um vetor com os valores intermediarios, se nao existir retorna null.
      */
     public static int[] createIntermediateValues(int start, int end){
         // calcula quantos itermediarios existem

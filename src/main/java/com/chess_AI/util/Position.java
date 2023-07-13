@@ -5,17 +5,17 @@ package com.chess_AI.util;
  */
 public class Position {
 
-    /** Valor da linha*/
+    /** Valor da linha.*/
     public final int LINE;
 
-    /** Valor da coluna*/
+    /** Valor da coluna.*/
     public final int COLUMN;
 
     /**
-     * Cria e retorna objeto de Position
+     * Cria e retorna objeto de Position.
      *
-     * @param line Linha que esta a posicao
-     * @param column Coluna que esta a posicao
+     * @param line Linha que esta a posicao.
+     * @param column Coluna que esta a posicao.
      */
     public Position(int line, int column){
         LINE = line;

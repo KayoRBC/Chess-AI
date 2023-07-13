@@ -1,22 +1,21 @@
-package com.chess_AI.model.chess.Piece;
+package com.chess_AI.model.board.piece;
 
-import com.chess_AI.model.chess.Board;
+import com.chess_AI.model.board.Board;
 import com.chess_AI.util.PieceColor;
-import com.chess_AI.util.PieceType;
 import com.chess_AI.util.Move;
 
 /**
- * Esta classe representa a peca do rei, possui as regras de movimentacao e o estado da peca.
+ * Esta classe representa a peca do rei.
  */
 public class King extends Piece{
 
     /**
-     * Cria e retorna um rei de uma determinada cor.
+     * Cria e retorna um objeto de King.
      *
-     * @param color Cor do rei
+     * @param color Cor do rei.
      */
     public King(PieceColor color) {
-        super(color, PieceType.KING);
+        super(color);
     }
 
     @Override

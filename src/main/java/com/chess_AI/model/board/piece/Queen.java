@@ -1,22 +1,21 @@
-package com.chess_AI.model.chess.Piece;
+package com.chess_AI.model.board.piece;
 
-import com.chess_AI.model.chess.Board;
+import com.chess_AI.model.board.Board;
 import com.chess_AI.util.PieceColor;
-import com.chess_AI.util.PieceType;
 import com.chess_AI.util.Move;
 
 /**
- * Esta classe representa a peca da rainha, possui as regras de movimentacao e o estado da peca.
+ * Esta classe representa a peca da rainha.
  */
 public class Queen extends Piece{
 
     /**
-     * Cria e retorna uma rainha de uma determinada cor.
+     * Cria e retorna um objeto de Queen.
      *
-     * @param color Cor da rainha
+     * @param color Cor da rainha.
      */
     public Queen(PieceColor color) {
-        super(color, PieceType.QUEEN);
+        super(color);
     }
 
     @Override
@@ -27,8 +26,8 @@ public class Queen extends Piece{
         return fromPiece instanceof Queen
                 && toPiece != null
                 && toPiece.getColor() != fromPiece.getColor()
-                && (isDiagonalValid(board, move)
-                    || isHorizontalValid(board, move)
-                    || isVerticalValid(board, move));
+                && (hasNotDiagonalIntermediaries(board, move)
+                    || hasNotHorizontalIntermediaries(board, move)
+                    || hasNotVerticalIntermediaries(board, move));
     }
 }

@@ -1,22 +1,21 @@
-package com.chess_AI.model.chess.Piece;
+package com.chess_AI.model.board.piece;
 
-import com.chess_AI.model.chess.Board;
+import com.chess_AI.model.board.Board;
 import com.chess_AI.util.PieceColor;
-import com.chess_AI.util.PieceType;
 import com.chess_AI.util.Move;
 
 /**
- * Esta classe representa a peca do peao, possui as regras de movimentacao e o estado da peca.
+ * Esta classe representa a peca do peao.
  */
 public class Pawn extends Piece{
 
     /**
-     * Cria e retorna um peao de uma determinada cor.
+     * Cria e retorna um objeto de Pawn.
      *
-     * @param color Cor do peao
+     * @param color Cor do peao.
      */
     public Pawn(PieceColor color) {
-        super(color, PieceType.PAWN);
+        super(color);
     }
 
     @Override
@@ -28,17 +27,17 @@ public class Pawn extends Piece{
         int horizontalDistance = Math.abs(move.FROM.COLUMN - move.TO.COLUMN);
 
         if(fromPiece instanceof Pawn && toPiece != null && fromPiece.getColor() != toPiece.getColor()
-                && verifyDirection(fromPiece.getColor(), move.FROM.LINE, move.TO.LINE)){
+                && isCorrectlyDirected(fromPiece.getColor(), move.FROM.LINE, move.TO.LINE)){
 
-            if(toPiece instanceof NullPiece){
-                if(fromPiece.hasMoved) return verticalDistance == 1 && isVerticalValid(board, move);
+            if(toPiece instanceof Null){
+                if(fromPiece.hasMoved) return verticalDistance == 1 && hasNotVerticalIntermediaries(board, move);
 
                 // peca nao foi movimentada ainda
-                else return verticalDistance < 3 && isVerticalValid(board, move);
+                else return verticalDistance < 3 && hasNotVerticalIntermediaries(board, move);
             }
             else{
                 boolean isOneStepDiagonal = horizontalDistance == 1 && verticalDistance == 1;
-                return isOneStepDiagonal && isDiagonalValid(board, move);
+                return isOneStepDiagonal && hasNotDiagonalIntermediaries(board, move);
             }
         }
 
@@ -46,14 +45,14 @@ public class Pawn extends Piece{
     }
 
     /**
-     * Verifica se a direcao de movimentacao vertical esta certa de acordo com a cor.
+     * Verifica se o sentido do movimento na direcao vertical esta correto.
      *
-     * @param color Cor da peca para verificar
-     * @param fromLine Posicao da linha de origem
-     * @param toLine Posicao da linha de destino
-     * @return Se direcao da movimentacao esta certa
+     * @param color Cor da peca que esta realizando o movimento.
+     * @param fromLine Posicao da linha de origem.
+     * @param toLine Posicao da linha de destino.
+     * @return Se o sentido do movimento esta correto.
      */
-    private boolean verifyDirection(PieceColor color, int fromLine, int toLine){
+    private boolean isCorrectlyDirected(PieceColor color, int fromLine, int toLine){
         if(color == PieceColor.WHITE){
             // se branca comeca por cima | valido se estar se movimentando para baixo
             if(PieceColor.isWhiteUp()) return fromLine - toLine < 0;
