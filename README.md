@@ -1,4 +1,9 @@
 # ♟️Chess-AI♟️
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/KayoRBC/Chess-AI)
+![GitHub](https://img.shields.io/github/license/KayoRBC/Chess-AI)
+![Static Badge](https://img.shields.io/badge/Maven-orange?logo=apachemaven&logoColor=%23C71A36)
+![Static Badge](https://img.shields.io/badge/OpenJDK-red?logo=openjdk&logoColor=%23FFFFFF)
+![GitHub top language](https://img.shields.io/github/languages/top/KayoRBC/Chess-AI)
 
 ###  🚧 Em desenvolvimento 🚧
 
@@ -14,9 +19,9 @@ O que me levou a fazer esse projeto foi a disciplina de Inteligência Artificial
 * Implementar o movimento [en passant](https://pt.wikipedia.org/wiki/En_passant).
 
 ## 🔧Tecnologias
-* Java
-* Maven
-* Java Swing 
+* Java 16
+* Maven 4.0.0
+* Java Swing
 
 ## 💡Como utilizar
 
