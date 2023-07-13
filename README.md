@@ -2,16 +2,6 @@
 
 ###  🚧 Em desenvolvimento 🚧
 
-## 📋Tópicos
-- [📚Sobre o projeto](#📚sobre-o-projeto)
-- [🔮Planejamentos futuros](#🔮planejamentos-futuros)
-- [🔧Tecnologias](#🔧tecnologias)
-- [💡Como utilizar](#💡como-utilizar)
-- [🚀Instalação, compilação e execução](#🚀instalação-compilação-e-execução)
-- [📁Diretórios](#📁diretórios)
-- [🔗Links](#🔗links)
-
-
 ## 📚Sobre o projeto
 Neste projeto, o objetivo é criar um jogo em que o jogador joga xadrez contra uma IA. 
 
