@@ -37,6 +37,9 @@ public class Board implements Cloneable{
         // define quem vai comecar o jogo
         isUserTurn = userColor == PieceColor.WHITE;
 
+        // define a direcao do tabuleiro para ser mostrado
+        PieceColor.setIsWhiteUp(USER_COLOR != PieceColor.WHITE);
+
         isAIWon = false;
         isUserWon = false;
 
