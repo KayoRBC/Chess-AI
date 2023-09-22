@@ -13,6 +13,7 @@ Neste projeto, o objetivo é criar um jogo em que o jogador joga xadrez contra u
 O que me levou a fazer esse projeto foi a disciplina de Inteligência Artificial do curso de **Ciência da Computação** da [PUCPR](https://www.pucpr.br). Um dos trabalhos era aplicar o algoritimo [**Alpha-Beta**](https://en.wikipedia.org/wiki/Alpha–beta_pruning) para predizer o melhor movimento esperado dado um estado do tabuleiro de xadrez. Após a apresentação do trabalho, decidi melhorar o código previamente desenvolvido e disponibilizá-lo.
 
 ## 🔮Planejamentos futuros
+* Aplicar as boas práticas que aprendi lendo o livro Clean Code.
 * Alterar a documentação e os comentários do código para inglês.
 * Alterar o README para inglês.
 * Adicionar uma imagem de fundo à tela inicial.
